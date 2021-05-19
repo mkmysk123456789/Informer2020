@@ -62,7 +62,7 @@ Commands for training and testing the model with *ProbSparse* self-attention on 
 
 ```bash
 # ETTh1
-python -u main_informer.py --model informer --data ETTh1 --attn prob --freq h
+python3 -u main_informer.py --model informer --data ETTh1 --attn prob --freq h
 
 # ETTh2
 python -u main_informer.py --model informer --data ETTh2 --attn prob --freq h
