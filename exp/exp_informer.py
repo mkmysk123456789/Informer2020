@@ -279,9 +279,12 @@ class Exp_Informer(Exp_Basic):
 
         # i = 0 しか実行しない bach = 1??
         for i, (batch_x, batch_y, batch_x_mark, batch_y_mark) in enumerate(pred_loader):
+            # どこの予測??
             pred, true = self._process_one_batch(
                 pred_data, batch_x, batch_y, batch_x_mark, batch_y_mark)
             preds.append(pred.detach().cpu().numpy())
+            print("Shape of pred on prediction:{}".format(true.shape))
+            print("Shape of true on prediction:{}".format(true.shape))
 
         preds = np.array(preds)
         preds = preds.reshape(-1, preds.shape[-2], preds.shape[-1])
