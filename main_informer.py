@@ -33,7 +33,8 @@ parser.add_argument('--pred_len', type=int, default=24,
                     help='prediction sequence length')
 # Informer decoder input: concat[start token series(label_len), zero padding series(pred_len)]
 
-parser.add_argument('--enc_in', type=int, default=7, help='encoder input size')
+parser.add_argument('--enc_in', type=int, default=7,
+                    help='encoder input size')  # 目的変数 1 + 説明変数 6 = 7 畳み込みレイヤの奥行きを示す
 parser.add_argument('--dec_in', type=int, default=7, help='decoder input size')
 parser.add_argument('--c_out', type=int, default=7, help='output size')
 parser.add_argument('--d_model', type=int, default=512,

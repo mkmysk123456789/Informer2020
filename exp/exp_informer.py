@@ -65,7 +65,7 @@ class Exp_Informer(Exp_Basic):
 
         data_dict = {
             'ETTh1': Dataset_ETT_hour,
-            'ETTh2': Dataset_ETT_hour,
+            'ETTh2': Dataset_ETT_hour,  # 別の場所の変電所のデータ
             'ETTm1': Dataset_ETT_minute,
             'ETTm2': Dataset_ETT_minute,
             'WTH': Dataset_Custom,
@@ -73,7 +73,7 @@ class Exp_Informer(Exp_Basic):
             'Solar': Dataset_Custom,
             'custom': Dataset_Custom,
         }
-        Data = data_dict[self.args.data]
+        Data = data_dict[self.args.data]  # どのデータを使うか　実態はまだ存在しない
         timeenc = 0 if args.embed != 'timeF' else 1
 
         if flag == 'test':
@@ -86,13 +86,15 @@ class Exp_Informer(Exp_Basic):
             drop_last = False
             batch_size = 1
             freq = args.detail_freq
-            Data = Dataset_Pred
+            Data = Dataset_Pred  # 予測するならdatasetは予測専用のもの
         else:  # train?? val ??
             shuffle_flag = True
             drop_last = True
             batch_size = args.batch_size
             freq = args.freq
         # どのデータを使うか, pathは??
+        # DataはDatasetを継承している
+        # なので__read_data__
         data_set = Data(
             root_path=args.root_path,
             data_path=args.data_path,
@@ -106,6 +108,7 @@ class Exp_Informer(Exp_Basic):
             cols=args.cols
         )
         print(flag, len(data_set))
+        # batchサイズで扱いやすくなる for in でバッチサイズごとに呼び出せる
         data_loader = DataLoader(
             data_set,
             batch_size=batch_size,
@@ -140,6 +143,7 @@ class Exp_Informer(Exp_Basic):
 
     def train(self, setting):
         # データを取得, pytorchのライブラリを活用
+        # data_set, data_loader
         train_data, train_loader = self._get_data(flag='train')
         vali_data, vali_loader = self._get_data(flag='val')  # val??
         test_data, test_loader = self._get_data(flag='test')
@@ -160,19 +164,22 @@ class Exp_Informer(Exp_Basic):
         if self.args.use_amp:
             scaler = torch.cuda.amp.GradScaler()
 
-        for epoch in range(self.args.train_epochs):
+        for epoch in range(self.args.train_epochs):  # epoch 初期値は 6
             iter_count = 0
             train_loss = []
 
-            self.model.train()
+            self.model.train()  # 1. modelのtrainを呼び出す
             epoch_time = time.time()
+            # データローダをfor inで回すことによって扱いやすくなる
             for i, (batch_x, batch_y, batch_x_mark, batch_y_mark) in enumerate(train_loader):
                 iter_count += 1
 
-                model_optim.zero_grad()
+                model_optim.zero_grad()  # 勾配の初期化
+                # 学習時は　model.eval()を呼ばない
+                # ここからが本質 xとyが何者なのか
                 pred, true = self._process_one_batch(
-                    train_data, batch_x, batch_y, batch_x_mark, batch_y_mark)
-                loss = criterion(pred, true)
+                    train_data, batch_x, batch_y, batch_x_mark, batch_y_mark)  # 現在の出力と正しい値
+                loss = criterion(pred, true)  # 誤差計算
                 train_loss.append(loss.item())
 
                 if (i+1) % 100 == 0:
@@ -191,8 +198,10 @@ class Exp_Informer(Exp_Basic):
                     scaler.step(model_optim)
                     scaler.update()
                 else:
-                    loss.backward()
-                    model_optim.step()
+                    loss.backward()  # 誤差逆伝搬
+                    model_optim.step()  # 更新
+
+            # loss のデータをsaveしたい
 
             print("Epoch: {} cost time: {}".format(
                 epoch+1, time.time()-epoch_time))
@@ -210,7 +219,7 @@ class Exp_Informer(Exp_Basic):
             adjust_learning_rate(model_optim, epoch+1, self.args)
 
         best_model_path = path+'/'+'checkpoint.pth'
-        self.model.load_state_dict(torch.load(best_model_path))
+        self.model.load_state_dict(torch.load(best_model_path))  # いつセーブした?
 
         return self.model
 
@@ -254,11 +263,16 @@ class Exp_Informer(Exp_Basic):
         pred_data, pred_loader = self._get_data(flag='pred')
 
         if load:
+            # checkpoint default "checkpoints"
             path = os.path.join(self.args.checkpoints, setting)
             best_model_path = path+'/'+'checkpoint.pth'
             self.model.load_state_dict(torch.load(best_model_path))
 
         self.model.eval()
+
+        # Batch normは、学習の際はバッチ間の平均や分散を計算しています。
+        # 推論するときは、平均/分散の値が正規化のために使われます。
+        # まとめると、eval()はdropoutやbatch normの on/offの切替です。
 
         preds = []
 
@@ -279,15 +293,20 @@ class Exp_Informer(Exp_Basic):
 
         return
 
+    # 一回のbatchに対してのモデル全体を通して出力を計算, 正解の値も返す
     def _process_one_batch(self, dataset_object, batch_x, batch_y, batch_x_mark, batch_y_mark):
+        # xがエンコーダ, yがデコーダのインプット
         batch_x = batch_x.float().to(self.device)
         batch_y = batch_y.float()
 
         batch_x_mark = batch_x_mark.float().to(self.device)
         batch_y_mark = batch_y_mark.float().to(self.device)
 
-        # decoder input
+        # decoder input 予測したいところを0埋め込み
         if self.args.padding == 0:
+            # Tensor型のdata「Channel×Height×Width」に変換するというもので,
+            # 7 * 時間方向 *
+            # batch_yはつまり予測したい値, ０に置き換える配列の大きさ??
             dec_inp = torch.zeros(
                 [batch_y.shape[0], self.args.pred_len, batch_y.shape[-1]]).float()
         elif self.args.padding == 1:
@@ -295,10 +314,11 @@ class Exp_Informer(Exp_Basic):
                 [batch_y.shape[0], self.args.pred_len, batch_y.shape[-1]]).float()
         dec_inp = torch.cat(
             [batch_y[:, :self.args.label_len, :], dec_inp], dim=1).float().to(self.device)
-        # encoder - decoder
+        # encoder - decoder　modelの出力, エンコーダとデコーダを通ってきた結果を出力
         if self.args.use_amp:
             with torch.cuda.amp.autocast():
                 if self.args.output_attention:
+                    # bacth xは三次元?
                     outputs = self.model(
                         batch_x, batch_x_mark, dec_inp, batch_y_mark)[0]
                 else:
@@ -316,4 +336,4 @@ class Exp_Informer(Exp_Basic):
         f_dim = -1 if self.args.features == 'MS' else 0
         batch_y = batch_y[:, -self.args.pred_len:, f_dim:].to(self.device)
 
-        return outputs, batch_y
+        return outputs, batch_y  # batch_y 正解
