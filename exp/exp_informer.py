@@ -297,6 +297,8 @@ class Exp_Informer(Exp_Basic):
     # 一回のbatchに対してのモデル全体を通して出力を計算, 正解の値も返す
     def _process_one_batch(self, dataset_object, batch_x, batch_y, batch_x_mark, batch_y_mark):
         print("Shape of batch_x on top model:{}".format(batch_x.shape))
+        print("Shape of batch_y on top model:{}".format(batch_y.shape))
+
         # xがエンコーダ, yがデコーダのインプット
         batch_x = batch_x.float().to(self.device)
         batch_y = batch_y.float()
@@ -337,5 +339,8 @@ class Exp_Informer(Exp_Basic):
             outputs = dataset_object.inverse_transform(outputs)
         f_dim = -1 if self.args.features == 'MS' else 0
         batch_y = batch_y[:, -self.args.pred_len:, f_dim:].to(self.device)
+
+        # outputの次元数
+        print("Shape of output on top model:{}".format(outputs.shape))
 
         return outputs, batch_y  # batch_y 正解
