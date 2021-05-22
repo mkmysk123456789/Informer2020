@@ -37,7 +37,7 @@ class Informer(nn.Module):
                     d_ff,
                     dropout=dropout,
                     activation=activation
-                ) for l in range(e_layers)
+                ) for l in range(5)
             ],
             [
                 ConvLayer(
