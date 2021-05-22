@@ -153,8 +153,8 @@ class InformerStack(nn.Module):
 
     def forward(self, x_enc, x_mark_enc, x_dec, x_mark_dec,
                 enc_self_mask=None, dec_self_mask=None, dec_enc_mask=None):
-        # モデルに入力されるbacth_xの次元数を確認
-        print("Shape of x_enc on top model:{}".format(x_enc.shape))
+        # モデルに入力されるbacth_xの次元数を確認 forwardの中のprintは無視される
+        # print("Shape of x_enc on top model:{}".format(x_enc.shape))
         enc_out = self.enc_embedding(x_enc, x_mark_enc)  # mark?? 埋め込み表現にする
         enc_out, attns = self.encoder(
             enc_out, attn_mask=enc_self_mask)  # エンコーダの計算

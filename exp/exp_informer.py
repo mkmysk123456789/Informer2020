@@ -295,6 +295,7 @@ class Exp_Informer(Exp_Basic):
 
     # 一回のbatchに対してのモデル全体を通して出力を計算, 正解の値も返す
     def _process_one_batch(self, dataset_object, batch_x, batch_y, batch_x_mark, batch_y_mark):
+        print("Shape of batch_x on top model:{}".format(batch_x.shape))
         # xがエンコーダ, yがデコーダのインプット
         batch_x = batch_x.float().to(self.device)
         batch_y = batch_y.float()
