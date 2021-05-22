@@ -99,7 +99,8 @@ class Exp_Informer(Exp_Basic):
             root_path=args.root_path,
             data_path=args.data_path,
             flag=flag,
-            size=[args.seq_len, args.label_len, args.pred_len],
+            size=[args.seq_len, args.label_len,
+                  args.pred_len],  # default pred_len 24
             features=args.features,
             target=args.target,
             inverse=args.inverse,
@@ -295,6 +296,7 @@ class Exp_Informer(Exp_Basic):
 
     # 一回のbatchに対してのモデル全体を通して出力を計算, 正解の値も返す
     def _process_one_batch(self, dataset_object, batch_x, batch_y, batch_x_mark, batch_y_mark):
+        print("Shape of batch_x on top model:{}".format(batch_x.shape))
         # xがエンコーダ, yがデコーダのインプット
         batch_x = batch_x.float().to(self.device)
         batch_y = batch_y.float()
