@@ -277,6 +277,7 @@ class Exp_Informer(Exp_Basic):
 
         preds = []
 
+        # i = 0 しか実行しない bach = 1??
         for i, (batch_x, batch_y, batch_x_mark, batch_y_mark) in enumerate(pred_loader):
             pred, true = self._process_one_batch(
                 pred_data, batch_x, batch_y, batch_x_mark, batch_y_mark)
@@ -307,6 +308,7 @@ class Exp_Informer(Exp_Basic):
         batch_y_mark = batch_y_mark.float().to(self.device)
 
         # decoder input 予測したいところを0埋め込み
+        # 具体的にどこを埋め込み?
         if self.args.padding == 0:
             # Tensor型のdata「Channel×Height×Width」に変換するというもので,
             # 7 * 時間方向 *
@@ -316,8 +318,14 @@ class Exp_Informer(Exp_Basic):
         elif self.args.padding == 1:
             dec_inp = torch.ones(
                 [batch_y.shape[0], self.args.pred_len, batch_y.shape[-1]]).float()
+        # 列方向につなげる
+        # label len は 48
+
         dec_inp = torch.cat(
             [batch_y[:, :self.args.label_len, :], dec_inp], dim=1).float().to(self.device)
+
+        print("Shape of dec_inp on top model:{}".format(dec_inp.shape))
+
         # encoder - decoder　modelの出力, エンコーダとデコーダを通ってきた結果を出力
         if self.args.use_amp:
             with torch.cuda.amp.autocast():
@@ -335,7 +343,7 @@ class Exp_Informer(Exp_Basic):
             else:
                 outputs = self.model(batch_x, batch_x_mark,
                                      dec_inp, batch_y_mark)
-        if self.args.inverse:
+        if self.args.inverse:  # default false
             outputs = dataset_object.inverse_transform(outputs)
         f_dim = -1 if self.args.features == 'MS' else 0
         batch_y = batch_y[:, -self.args.pred_len:, f_dim:].to(self.device)
