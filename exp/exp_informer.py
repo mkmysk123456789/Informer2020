@@ -276,6 +276,7 @@ class Exp_Informer(Exp_Basic):
         # まとめると、eval()はdropoutやbatch normの on/offの切替です。
 
         preds = []
+        trues = []
 
         # i = 0 しか実行しない bach = 1??
         for i, (batch_x, batch_y, batch_x_mark, batch_y_mark) in enumerate(pred_loader):
@@ -283,11 +284,16 @@ class Exp_Informer(Exp_Basic):
             pred, true = self._process_one_batch(
                 pred_data, batch_x, batch_y, batch_x_mark, batch_y_mark)
             preds.append(pred.detach().cpu().numpy())
+            trues.append(true.detach().cpu().numpy())
+
             print("Shape of pred on prediction:{}".format(true.shape))
             print("Shape of true on prediction:{}".format(true.shape))
 
         preds = np.array(preds)
         preds = preds.reshape(-1, preds.shape[-2], preds.shape[-1])
+
+        trues = np.array(trues)
+        trues = trues.reshape(-1, trues.shape[-2], trues.shape[-1])
 
         # result save
         folder_path = './results/' + setting + '/'
@@ -295,6 +301,7 @@ class Exp_Informer(Exp_Basic):
             os.makedirs(folder_path)
 
         np.save(folder_path+'real_prediction.npy', preds)
+        np.save(folder_path+'real_prediction_trues.npy', trues)
 
         return
 
