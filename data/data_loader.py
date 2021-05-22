@@ -384,7 +384,7 @@ class Dataset_Pred(Dataset):
             self.data_y = data[border1:border2]
         self.data_stamp = data_stamp
 
-    def __getitem__(self, index):
+    def __getitem__(self, index):  # これの理解が一番重要??
         s_begin = index
         s_end = s_begin + self.seq_len
         r_begin = s_end - self.label_len
