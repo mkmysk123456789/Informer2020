@@ -319,7 +319,7 @@ class Dataset_Pred(Dataset):
             self.label_len = 24*4
             self.pred_len = 24*4
         else:
-            self.seq_len = size[0]
+            self.seq_len = size[0]  # default 96
             self.label_len = size[1]
             self.pred_len = size[2]
         # init
