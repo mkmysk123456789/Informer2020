@@ -2,19 +2,21 @@ import os
 import torch
 import numpy as np
 
+
 class Exp_Basic(object):
     def __init__(self, args):
         self.args = args
         self.device = self._acquire_device()
-        self.model = self._build_model().to(self.device)
+        self.model = self._build_model().to(self.device)  # toをつけたらtrainが呼び出せる
 
-    def _build_model(self):
+    def _build_model(self):  # 継承先で実装する
         raise NotImplementedError
         return None
-    
+
     def _acquire_device(self):
         if self.args.use_gpu:
-            os.environ["CUDA_VISIBLE_DEVICES"] = str(self.args.gpu) if not self.args.use_multi_gpu else self.args.devices
+            os.environ["CUDA_VISIBLE_DEVICES"] = str(
+                self.args.gpu) if not self.args.use_multi_gpu else self.args.devices
             device = torch.device('cuda:{}'.format(self.args.gpu))
             print('Use GPU: cuda:{}'.format(self.args.gpu))
         else:
@@ -33,4 +35,3 @@ class Exp_Basic(object):
 
     def test(self):
         pass
-    
