@@ -43,8 +43,8 @@ class Informer(nn.Module):
                 ConvLayer(
                     d_model
                 ) for l in range(e_layers-1)
-            ] if distil else None,
-            norm_layer=torch.nn.LayerNorm(d_model)
+            ] if distil else None,  # default false
+            norm_layer=torch.nn.LayerNorm(d_model)  # これを変化??
         )
         # Decoder
         self.decoder = Decoder(
@@ -113,6 +113,7 @@ class InformerStack(nn.Module):
         encoders = [
             Encoder(
                 [
+                    # attention + conv
                     EncoderLayer(
                         AttentionLayer(Attn(False, factor, attention_dropout=dropout, output_attention=output_attention),
                                        d_model, n_heads, mix=False),

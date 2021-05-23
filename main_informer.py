@@ -4,6 +4,8 @@ import torch
 
 from exp.exp_informer import Exp_Informer
 
+from linenotify import send_line_notify
+
 parser = argparse.ArgumentParser(
     description='[Informer] Long Sequences Forecasting')
 
@@ -126,7 +128,7 @@ print(args)
 
 Exp = Exp_Informer
 
-for ii in range(args.itr):
+for ii in range(args.itr):  # default 2
     # setting record of experiments
     setting = '{}_{}_ft{}_sl{}_ll{}_pl{}_dm{}_nh{}_el{}_dl{}_df{}_at{}_fc{}_eb{}_dt{}_mx{}_{}_{}'.format(args.model, args.data, args.features,
                                                                                                          args.seq_len, args.label_len, args.pred_len,
@@ -145,3 +147,5 @@ for ii in range(args.itr):
     exp.predict(setting, True)
 
     torch.cuda.empty_cache()
+
+send_line_notify()
