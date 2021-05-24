@@ -9,17 +9,18 @@ class ConvLayer(nn.Module):
         self.downConv = nn.Conv1d(in_channels=c_in,
                                   out_channels=c_in,
                                   kernel_size=3,
-                                  padding=2,
+                                  padding=2,  # padding 2
                                   padding_mode='circular')
         self.norm = nn.BatchNorm1d(c_in)
         self.activation = nn.ELU()
-        self.maxPool = nn.MaxPool1d(kernel_size=3, stride=2, padding=1)
+        self.maxPool = nn.MaxPool1d(
+            kernel_size=3, stride=2, padding=1)  # stride = 2 より二分の1になる
 
     def forward(self, x):
         x = self.downConv(x.permute(0, 2, 1))
         x = self.norm(x)
         x = self.activation(x)
-        x = self.maxPool(x)
+        x = self.maxPool(x)  # ここでL/2にする
         x = x.transpose(1, 2)
         return x
 
@@ -48,7 +49,7 @@ class EncoderLayer(nn.Module):
             x, x, x,
             attn_mask=attn_mask
         )
-        x = x + self.dropout(new_x)
+        x = x + self.dropout(new_x)  # 残差結合
 
         y = x = self.norm1(x)
         y = self.dropout(self.activation(self.conv1(y.transpose(-1, 1))))

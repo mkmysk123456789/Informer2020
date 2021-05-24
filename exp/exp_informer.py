@@ -173,6 +173,8 @@ class Exp_Informer(Exp_Basic):
             epoch_time = time.time()
             # データローダをfor inで回すことによって扱いやすくなる
             for i, (batch_x, batch_y, batch_x_mark, batch_y_mark) in enumerate(train_loader):
+                print("Shape of batch_x")
+                print(batch_x.shape)
                 iter_count += 1
 
                 model_optim.zero_grad()  # 勾配の初期化
@@ -329,7 +331,8 @@ class Exp_Informer(Exp_Basic):
             dec_inp = torch.ones(
                 [batch_y.shape[0], self.args.pred_len, batch_y.shape[-1]]).float()
         # 列方向につなげる
-        # label len は 48
+        # label len は 48 すでにわかっていることを前提で予測をする長さ
+        # label_lenは正解ラベル, pred_lenは予測する長さで0とおく
 
         dec_inp = torch.cat(
             [batch_y[:, :self.args.label_len, :], dec_inp], dim=1).float().to(self.device)

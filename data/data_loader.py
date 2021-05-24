@@ -70,7 +70,7 @@ class Dataset_ETT_hour(Dataset):
             # 正規化の実行 訓練データの平均と分散で正規化する 答えをカンニングしないということ?
             data = self.scaler.transform(df_data.values)
         else:
-            data = df_data.values  # データの取得
+            data = df_data.values  # データの取得 nd array
 
         # これは画像であるPIL image または ndarrayのdata「Height×Width×Channel」を
         # Tensor型のdata「Channel×Height×Width」に変換するというもので,
@@ -87,7 +87,7 @@ class Dataset_ETT_hour(Dataset):
 
         # data_xとdata_yで何が違う??
 
-        self.data_x = data[border1:border2]  # データ
+        self.data_x = data[border1:border2]  # データ 二次元
         if self.inverse:  # default false
             self.data_y = df_data.values[border1:border2]
         else:
@@ -107,7 +107,7 @@ class Dataset_ETT_hour(Dataset):
         # rに関して
         # s_endを基準にして 右にlabel_len 左にlabel_len + pred_len
 
-        seq_x = self.data_x[s_begin:s_end]  # 何時限?
+        seq_x = self.data_x[s_begin:s_end]  # 何時限? 二次元
         seq_y = self.data_y[r_begin:r_end]
         seq_x_mark = self.data_stamp[s_begin:s_end]  # markは時刻のマークという意味??
         seq_y_mark = self.data_stamp[r_begin:r_end]

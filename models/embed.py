@@ -38,12 +38,14 @@ class TokenEmbedding(nn.Module):
                 nn.init.kaiming_normal_(
                     m.weight, mode='fan_in', nonlinearity='leaky_relu')  # 重みの初期化
 
-    def forward(self, x):  # どう考えてもこのxは二次元な気がする
+    def forward(self, x):  # どう考えてもこのxは二次元な気がする いや三次元 バッチ数があるので二次元から三次元になる
         # 次元を入れ替えて
         # 畳み込みした後また入れ替える
         # なぜ二次元のデータなのに三次元っぽく扱える?
-        #
+        # 32 バッチ取得するから三次元になるのか
+        # デコーダでも同じ
         x = self.tokenConv(x.permute(0, 2, 1)).transpose(1, 2)
+        # 32 48 512
         return x
 
 
