@@ -10,8 +10,10 @@ class PositionalEmbedding(nn.Module):
         super(PositionalEmbedding, self).__init__()
         # Compute the positional encodings once in log space.
         pe = torch.zeros(max_len, d_model).float()
+        # 微分の対象とはしない
         pe.require_grad = False
 
+        # [0,1]
         position = torch.arange(0, max_len).float().unsqueeze(1)
         div_term = (torch.arange(0, d_model, 2).float()
                     * -(math.log(10000.0) / d_model)).exp()
@@ -23,11 +25,25 @@ class PositionalEmbedding(nn.Module):
         self.register_buffer('pe', pe)
 
     def forward(self, x):
+        # なぜpeをそのまま返さない??
+        # forwardに流れてくるxの形は一定でないということ
+        # エンコーダに入ってくる大きさは一定だけどデコーダに入ってくるのはバラバラと言いたい??
+
         return self.pe[:, :x.size(1)]
 
 
 class TokenEmbedding(nn.Module):
     def __init__(self, c_in, d_model):
+        # この時点で隣り合っている時点の要素を考慮するような埋め込み表現を作っている
+        # この埋め込み表現の役割は二つある
+        # 一つ目はある時点に対する特徴量の次元数を拡張すること 例 7次元だったのが512次元になる
+        # 拡張することによって時刻の埋め込み表現などと一緒に和を取ることができる
+        # 一次元の畳み込みによって奥行きを増やすことができ, 次元数を統一し,
+        # 他の埋め込み表現との和を取ることができるのがいいところである
+        # 二つ目はある時点の観測値の隣り合っている点三つをひとつにまとめること
+        # これによって生の値をそのままTransformerに入れるのではなく, 滑らかに繋がったデータを
+        # 利用することができるのでは??
+
         super(TokenEmbedding, self).__init__()
         padding = 1 if torch.__version__ >= '1.5.0' else 2
         self.tokenConv = nn.Conv1d(in_channels=c_in, out_channels=d_model,
@@ -71,6 +87,7 @@ class FixedEmbedding(nn.Module):
 
 
 class TemporalEmbedding(nn.Module):
+    # ある時点一点のみを見た時のその埋め込み表現を作成する
     def __init__(self, d_model, embed_type='fixed', freq='h'):
         super(TemporalEmbedding, self).__init__()
 
@@ -80,6 +97,11 @@ class TemporalEmbedding(nn.Module):
         day_size = 32
         month_size = 13
 
+        # 例えば15分ごとの点である4パターンある一時間の中の時刻の位置を
+        # 一つの点に対して512個の要素を持つ一次元の配列で表現するのが
+        # 埋め込み表現である.
+        # Embed(4, 512)
+        # 疑問 :
         Embed = FixedEmbedding if embed_type == 'fixed' else nn.Embedding
         if freq == 't':
             self.minute_embed = Embed(minute_size, d_model)
@@ -89,8 +111,13 @@ class TemporalEmbedding(nn.Module):
         self.month_embed = Embed(month_size, d_model)
 
     def forward(self, x):
+        # このxはx_mark
+        # temporalenb はmarkを使う
         x = x.long()
 
+        # ある時刻に対しての埋め込み表現は一次元の配列で
+        # 月, 日付, 時間, 分の順で並んでいる
+        # 以下のスライシングの最後の数字はそれを示す
         minute_x = self.minute_embed(x[:, :, 4]) if hasattr(
             self, 'minute_embed') else 0.
         hour_x = self.hour_embed(x[:, :, 3])
@@ -120,7 +147,9 @@ class DataEmbedding(nn.Module):
 
         self.value_embedding = TokenEmbedding(
             c_in=c_in, d_model=d_model)  # tokenの意味は
+        #
         self.position_embedding = PositionalEmbedding(d_model=d_model)
+        # ある一時点を見た時のその時刻のみの埋め込み表現
         self.temporal_embedding = TemporalEmbedding(d_model=d_model, embed_type=embed_type, freq=freq) if embed_type != 'timeF' else TimeFeatureEmbedding(
             d_model=d_model, embed_type=embed_type, freq=freq)
 

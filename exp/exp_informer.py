@@ -1,4 +1,5 @@
-from data.data_loader import Dataset_ETT_hour, Dataset_ETT_minute, Dataset_Custom, Dataset_Pred
+from tqdm import tqdm
+from data.data_loader import Dataset_ETT_hour, Dataset_ETT_minute, Dataset_Custom, Dataset_Pred, Dataset_StepCount
 from exp.exp_basic import Exp_Basic
 from models.model import Informer, InformerStack
 
@@ -72,6 +73,7 @@ class Exp_Informer(Exp_Basic):
             'ECL': Dataset_Custom,
             'Solar': Dataset_Custom,
             'custom': Dataset_Custom,
+            'StepCount': Dataset_StepCount
         }
         Data = data_dict[self.args.data]  # どのデータを使うか　実態はまだ存在しない
         timeenc = 0 if args.embed != 'timeF' else 1
@@ -86,7 +88,7 @@ class Exp_Informer(Exp_Basic):
             drop_last = False
             batch_size = 1  # どういう意味??
             freq = args.detail_freq
-            Data = Dataset_Pred  # 予測するならdatasetは予測専用のもの
+            Data = Dataset_Pred  # 予測するならdatasetは予測専用のものに変更する
         else:  # train?? val ??
             shuffle_flag = True
             drop_last = True
@@ -133,7 +135,7 @@ class Exp_Informer(Exp_Basic):
     def vali(self, vali_data, vali_loader, criterion):
         self.model.eval()
         total_loss = []
-        for i, (batch_x, batch_y, batch_x_mark, batch_y_mark) in enumerate(vali_loader):
+        for i, (batch_x, batch_y, batch_x_mark, batch_y_mark) in enumerate(tqdm(vali_loader)):
             pred, true = self._process_one_batch(
                 vali_data, batch_x, batch_y, batch_x_mark, batch_y_mark)
             loss = criterion(pred.detach().cpu(), true.detach().cpu())
@@ -308,6 +310,7 @@ class Exp_Informer(Exp_Basic):
         return
 
     # 一回のbatchに対してのモデル全体を通して出力を計算, 正解の値も返す
+    # train, val, pred すべてこれを使う
     def _process_one_batch(self, dataset_object, batch_x, batch_y, batch_x_mark, batch_y_mark):
         print("Shape of batch_x on top model:{}".format(batch_x.shape))
         print("Shape of batch_y on top model:{}".format(batch_y.shape))

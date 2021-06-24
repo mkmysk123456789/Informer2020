@@ -124,3 +124,13 @@ If you have any questions, feel free to contact Haoyi Zhou through Email (zhouha
 Thanks for the computing infrastructure provided by Beijing Advanced Innovation Center for Big Data and Brain Computing ([BDBC](http://bdbc.buaa.edu.cn/)).
 At the same time, thank you all for your attention to this work!
 [![Stargazers repo roster for @zhouhaoyi/Informer2020](https://reporoster.com/stars/zhouhaoyi/Informer2020)](https://github.com/zhouhaoyi/Informer2020/stargazers)
+
+
+
+# 再現実装用 実行コマンド集
+
+## StepCount
+
+### 1時間
+
+python3 -u main_informer.py --model informer --data StepCount --attn prob --freq h --data_path iPhone_StepCount_from_2017_to_2021_6_18.csv --root_path ./data/StepCount --target StepCount --enc_in 2 --dec_in 2 --c_out 2
