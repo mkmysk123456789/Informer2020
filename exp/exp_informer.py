@@ -175,8 +175,8 @@ class Exp_Informer(Exp_Basic):
             epoch_time = time.time()
             # データローダをfor inで回すことによって扱いやすくなる
             for i, (batch_x, batch_y, batch_x_mark, batch_y_mark) in enumerate(tqdm(train_loader)):
-                print("Shape of batch_x")
-                print(batch_x.shape)
+                # print("Shape of batch_x")
+                # print(batch_x.shape)
                 iter_count += 1
 
                 model_optim.zero_grad()  # 勾配の初期化
