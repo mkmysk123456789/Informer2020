@@ -174,7 +174,7 @@ class Exp_Informer(Exp_Basic):
             self.model.train()  # 1. modelのtrainを呼び出す
             epoch_time = time.time()
             # データローダをfor inで回すことによって扱いやすくなる
-            for i, (batch_x, batch_y, batch_x_mark, batch_y_mark) in enumerate(train_loader):
+            for i, (batch_x, batch_y, batch_x_mark, batch_y_mark) in enumerate(tqdm(train_loader)):
                 print("Shape of batch_x")
                 print(batch_x.shape)
                 iter_count += 1
@@ -236,7 +236,7 @@ class Exp_Informer(Exp_Basic):
         preds = []
         trues = []
 
-        for i, (batch_x, batch_y, batch_x_mark, batch_y_mark) in enumerate(test_loader):
+        for i, (batch_x, batch_y, batch_x_mark, batch_y_mark) in enumerate(tqdm(test_loader)):
             pred, true = self._process_one_batch(
                 test_data, batch_x, batch_y, batch_x_mark, batch_y_mark)
             preds.append(pred.detach().cpu().numpy())
@@ -244,10 +244,10 @@ class Exp_Informer(Exp_Basic):
 
         preds = np.array(preds)
         trues = np.array(trues)
-        print('test shape:', preds.shape, trues.shape)
+        # print('test shape:', preds.shape, trues.shape)
         preds = preds.reshape(-1, preds.shape[-2], preds.shape[-1])
         trues = trues.reshape(-1, trues.shape[-2], trues.shape[-1])
-        print('test shape:', preds.shape, trues.shape)
+        # print('test shape:', preds.shsape, trues.shape)
 
         # result save
         folder_path = './results/' + setting + '/'
@@ -290,8 +290,8 @@ class Exp_Informer(Exp_Basic):
             preds.append(pred.detach().cpu().numpy())
             trues.append(true.detach().cpu().numpy())
 
-            print("Shape of pred on prediction:{}".format(true.shape))
-            print("Shape of true on prediction:{}".format(true.shape))
+            # print("Shape of pred on prediction:{}".format(true.shape))
+            # print("Shape of true on prediction:{}".format(true.shape))
 
         preds = np.array(preds)
         preds = preds.reshape(-1, preds.shape[-2], preds.shape[-1])
@@ -312,8 +312,8 @@ class Exp_Informer(Exp_Basic):
     # 一回のbatchに対してのモデル全体を通して出力を計算, 正解の値も返す
     # train, val, pred すべてこれを使う
     def _process_one_batch(self, dataset_object, batch_x, batch_y, batch_x_mark, batch_y_mark):
-        print("Shape of batch_x on top model:{}".format(batch_x.shape))
-        print("Shape of batch_y on top model:{}".format(batch_y.shape))
+        # print("Shape of batch_x on top model:{}".format(batch_x.shape))
+        # print("Shape of batch_y on top model:{}".format(batch_y.shape))
 
         # xがエンコーダ, yがデコーダのインプット
         batch_x = batch_x.float().to(self.device)
@@ -340,7 +340,7 @@ class Exp_Informer(Exp_Basic):
         dec_inp = torch.cat(
             [batch_y[:, :self.args.label_len, :], dec_inp], dim=1).float().to(self.device)
 
-        print("Shape of dec_inp on top model:{}".format(dec_inp.shape))
+        # print("Shape of dec_inp on top model:{}".format(dec_inp.shape))
 
         # encoder - decoder　modelの出力, エンコーダとデコーダを通ってきた結果を出力
         if self.args.use_amp:
@@ -365,6 +365,6 @@ class Exp_Informer(Exp_Basic):
         batch_y = batch_y[:, -self.args.pred_len:, f_dim:].to(self.device)
 
         # outputの次元数
-        print("Shape of output on top model:{}".format(outputs.shape))
+        # print("Shape of output on top model:{}".format(outputs.shape))
 
         return outputs, batch_y  # batch_y 正解
