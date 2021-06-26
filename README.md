@@ -133,4 +133,4 @@ At the same time, thank you all for your attention to this work!
 
 ### 1時間
 
-python3 -u main_informer.py --model informer --data StepCount --attn prob --freq h --data_path iPhone_StepCount_from_2017_to_2021_6_18.csv --root_path ./data/StepCount --target StepCount --enc_in 2 --dec_in 2 --c_out 2
+python3 -u main_informer.py --model informer --data StepCount --attn prob --freq h --data_path iPhone_StepCount_from_2017_to_2021_6_18.csv --root_path ./data/StepCount --target StepCount --enc_in 1 --dec_in 1 --c_out 1 --features S --pred_len 48

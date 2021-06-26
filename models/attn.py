@@ -17,11 +17,13 @@ class FullAttention(nn.Module):
         self.dropout = nn.Dropout(attention_dropout)
 
     def forward(self, queries, keys, values, attn_mask):
+        # q, k, v 線形のNNを通ってくるが最初は同じ
         B, L, H, E = queries.shape
         _, S, _, D = values.shape
         scale = self.scale or 1./sqrt(E)
 
         scores = torch.einsum("blhe,bshe->bhls", queries, keys)
+        # これを可視化するにはどうしたらいいか
         if self.mask_flag:
             if attn_mask is None:
                 attn_mask = TriangularCausalMask(B, L, device=queries.device)
@@ -147,6 +149,7 @@ class AttentionLayer(nn.Module):
         d_values = d_values or (d_model//n_heads)
 
         self.inner_attention = attention
+        # query_projectionがAttentionを計算するための学習対象になる
         self.query_projection = nn.Linear(d_model, d_keys * n_heads)
         self.key_projection = nn.Linear(d_model, d_keys * n_heads)
         self.value_projection = nn.Linear(d_model, d_values * n_heads)
@@ -155,6 +158,7 @@ class AttentionLayer(nn.Module):
         self.mix = mix
 
     def forward(self, queries, keys, values, attn_mask):
+        # x , cross, cross なのでエンコーダの出力がkeyとqueriesになる
         B, L, _ = queries.shape
         _, S, _ = keys.shape
         H = self.n_heads
