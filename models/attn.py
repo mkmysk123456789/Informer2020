@@ -23,6 +23,7 @@ class FullAttention(nn.Module):
         scale = self.scale or 1./sqrt(E)
 
         scores = torch.einsum("blhe,bshe->bhls", queries, keys)
+        print(str(visualize))
         # これを可視化するにはどうしたらいいか
         if visualize:
             attention_weight = scores.to('cpu').detach().numpy().copy()
