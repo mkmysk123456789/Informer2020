@@ -113,7 +113,7 @@ class ProbAttention(nn.Module):
         else:
             return (context_in, None)
 
-    def forward(self, queries, keys, values, attn_mask):
+    def forward(self, queries, keys, values, attn_mask, visualize=False):
         B, L_Q, H, D = queries.shape
         _, L_K, _, _ = keys.shape
 
@@ -162,7 +162,7 @@ class AttentionLayer(nn.Module):
         self.n_heads = n_heads  # 512
         self.mix = mix
 
-    def forward(self, queries, keys, values, attn_mask):
+    def forward(self, queries, keys, values, attn_mask, visualize=False):
         # x , cross, cross なのでエンコーダの出力がkeyとqueriesになる
         B, L, _ = queries.shape
         _, S, _ = keys.shape
@@ -176,7 +176,7 @@ class AttentionLayer(nn.Module):
             queries,
             keys,
             values,
-            attn_mask
+            attn_mask, visualize=False
         )
         if self.mix:
             out = out.transpose(2, 1).contiguous()
