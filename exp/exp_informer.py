@@ -298,14 +298,21 @@ class Exp_Informer(Exp_Basic):
 
         trues = np.array(trues)
         trues = trues.reshape(-1, trues.shape[-2], trues.shape[-1])
+        
+        mae, mse, rmse, mape, mspe = metric(preds, trues)
+        print('mse:{}, mae:{}'.format(mse, mae))
 
         # result save
         folder_path = './results/' + setting + '/'
+        
         if not os.path.exists(folder_path):
             os.makedirs(folder_path)
+            
+        np.save(folder_path+'metrics.npy',
+        np.array([mae, mse, rmse, mape, mspe]))
 
-        np.save(folder_path+'real_prediction.npy', preds)
-        np.save(folder_path+'real_prediction_trues.npy', trues)
+        np.save(folder_path+'pred_preds.npy', preds)
+        np.save(folder_path+'pred_trues.npy', trues)
 
         return
 
