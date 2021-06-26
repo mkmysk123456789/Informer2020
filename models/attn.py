@@ -16,7 +16,7 @@ class FullAttention(nn.Module):
         self.output_attention = output_attention
         self.dropout = nn.Dropout(attention_dropout)
 
-    def forward(self, queries, keys, values, attn_mask):
+    def forward(self, queries, keys, values, attn_mask, visualize=False):
         # q, k, v 線形のNNを通ってくるが最初は同じ
         B, L, H, E = queries.shape
         _, S, _, D = values.shape
@@ -24,6 +24,11 @@ class FullAttention(nn.Module):
 
         scores = torch.einsum("blhe,bshe->bhls", queries, keys)
         # これを可視化するにはどうしたらいいか
+        if visualize:
+            attention_weight = scores.to('cpu').detach().numpy().copy()
+            np.save("./results/attention/attention_weight",
+                    attention_weight)
+
         if self.mask_flag:
             if attn_mask is None:
                 attn_mask = TriangularCausalMask(B, L, device=queries.device)
