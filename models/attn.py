@@ -27,7 +27,7 @@ class FullAttention(nn.Module):
         # これを可視化するにはどうしたらいいか
         if visualize:
             attention_weight = scores.to('cpu').detach().numpy().copy()
-            np.save("attention_weight.npy",
+            np.save("./results/attention/attention_weight.npy",
                     attention_weight)
 
         if self.mask_flag:
