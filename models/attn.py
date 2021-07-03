@@ -34,6 +34,7 @@ class FullAttention(nn.Module):
             if attn_mask is None:
                 attn_mask = TriangularCausalMask(B, L, device=queries.device)
 
+            # 動的ネットワーク?? 流れてくるデータに応じて構造が変わる??
             scores.masked_fill_(attn_mask.mask, -np.inf)
 
         A = self.dropout(torch.softmax(scale * scores, dim=-1))
