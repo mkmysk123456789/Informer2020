@@ -22,7 +22,7 @@ class CAT_FullAttention(nn.Module):
         B, S, Q = values.shape
         # scale = self.scale or 1./sqrt(E)
 
-        scores = torch.einsum("blp,bsq->blsq", queries, keys)
+        scores = torch.einsum("blq,bsq->blsq", queries, keys)
         # print(str(visualize))
         # これを可視化するにはどうしたらいいか
         if visualize:
