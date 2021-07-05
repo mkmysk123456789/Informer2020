@@ -38,7 +38,7 @@ class CAT_FullAttention(nn.Module):
         #     scores.masked_fill_(attn_mask.mask, -np.inf)
 
         A = self.dropout(torch.softmax(scores, dim=-1))
-        V = torch.einsum("blsp,bsq->blq", A, values)
+        V = torch.einsum("blsq,bsq->blq", A, values)
 
         if self.output_attention:
             return (V.contiguous(), A)
