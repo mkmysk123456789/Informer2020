@@ -25,10 +25,10 @@ class CAT_FullAttention(nn.Module):
         scores = torch.einsum("blp,bsq->bslq", queries, keys)
         # print(str(visualize))
         # これを可視化するにはどうしたらいいか
-        # if visualize:
-        #     attention_weight = scores.to('cpu').detach().numpy().copy()
-        #     np.save("./results/attention/attention_weight.npy",
-        #             attention_weight)
+        if visualize:
+            attention_weight = scores.to('cpu').detach().numpy().copy()
+            np.save("./results/attention/attention_weight.npy",
+                    attention_weight)
 
         # if self.mask_flag:
         #     if attn_mask is None:
@@ -168,8 +168,8 @@ class CAT_AttentionLayer(nn.Module):
     def forward(self, queries, keys, values, attn_mask, visualize=False):
         # x , cross, cross なのでエンコーダの出力がkeyとqueriesになる
 
-        print("queries.shape : "+str(queries.shape))
-        print("keys.shape : "+str(keys.shape))
+        # print("queries.shape : "+str(queries.shape))
+        # print("keys.shape : "+str(keys.shape))
 
         B, L, _ = queries.shape
         _, S, _ = keys.shape

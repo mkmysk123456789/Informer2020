@@ -28,7 +28,7 @@ class CAT_PositionalEmbedding(nn.Module):
     def forward(self, x):
         # # torch.Size([1, 96, 10]) -> torch.Size([10, 1, 96])
         tmp_pe = self.pe[:, :x.size(1)].permute(2, 0, 1)
-        print("CAT_PositionalEmbedding forward : " + str(tmp_pe.size()))
+        # print("CAT_PositionalEmbedding forward : " + str(tmp_pe.size()))
         return tmp_pe
 
 
@@ -60,7 +60,7 @@ class CAT_TokenEmbedding(nn.Module):
         x = self.tokenConv(x).permute(1, 2, 0)
         # torch.Size([32, 1, 96]) ->  torch.Size([32, 10, 96]) tokenConv
         # torch.Size([32, 10, 96])-> torch.Size([10, 32, 96]) permute
-        print("CAT_TokenEmbedding permute : " + str(x.size()))
+        # print("CAT_TokenEmbedding permute : " + str(x.size()))
         return x
 
 
@@ -132,7 +132,7 @@ class CAT_TemporalEmbedding(nn.Module):
         temporal_embed = hour_x + weekday_x + day_x + month_x + minute_x
 
         temporal_embed = temporal_embed.permute(2, 0, 1)
-        print("CAT_TemporalEmbedding Output : " + str(temporal_embed.size()))
+        # print("CAT_TemporalEmbedding Output : " + str(temporal_embed.size()))
 
         return temporal_embed
 
@@ -169,7 +169,7 @@ class CAT_DataEmbedding(nn.Module):
         self.dropout = nn.Dropout(p=dropout)
 
     def _embed(self, x, x_mark):
-        print("_embed : " + str(x.size()))
+        # print("_embed : " + str(x.size()))
         # torch.Size([32, 96])
         # value_embedding -> torch.Size([10, 32, 96])
         # position_embedding -> torch.Size([10, 1, 96]) この1は32に自動で合わせられる
@@ -191,6 +191,6 @@ class CAT_DataEmbedding(nn.Module):
         # torch.Size([70, 96, 32]) -> torch.Size([32, 96, 70])
         output = output.permute(1, 2, 0)
 
-        print("forward transpose in CAT_DataEmbedding :  " + str(output.size()))
+        # print("forward transpose in CAT_DataEmbedding :  " + str(output.size()))
 
         return self.dropout(output)
