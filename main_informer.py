@@ -94,6 +94,13 @@ parser.add_argument('--use_multi_gpu', action='store_true',
 parser.add_argument('--devices', type=str, default='0,1,2,3',
                     help='device ids of multile gpus')
 
+parser.add_argument('--interpret', type=bool, default=False,
+                    help='if high attention weight is masked by 0')
+
+parser.add_argument('--three_dimension', type=bool, default=False,
+                    help='enable three-dimensional attention')
+
+
 args = parser.parse_args()
 
 args.use_gpu = True if torch.cuda.is_available() and args.use_gpu else False

@@ -1,3 +1,4 @@
+from utils.loss import CustomLoss
 from tqdm import tqdm
 from data.data_loader import Dataset_ETT_hour, Dataset_ETT_minute, Dataset_Custom, Dataset_Pred, Dataset_StepCount
 from exp.exp_basic import Exp_Basic
@@ -129,7 +130,10 @@ class Exp_Informer(Exp_Basic):
         return model_optim
 
     def _select_criterion(self):
-        criterion = nn.MSELoss()
+        if self.args.interpret is True:
+            criterion = CustomLoss()
+        else:
+            criterion = nn.MSELoss()
         return criterion
 
     def vali(self, vali_data, vali_loader, criterion):
@@ -184,7 +188,16 @@ class Exp_Informer(Exp_Basic):
                 # ここからが本質 xとyが何者なのか
                 pred, true = self._process_one_batch(
                     train_data, batch_x, batch_y, batch_x_mark, batch_y_mark)  # 現在の出力と正しい値
-                loss = criterion(pred, true)  # 誤差計算
+
+                if self.args.interpret is True:
+                    # 高いattentionをmaskしたときのpred
+                    mask_attention_pred, true = self._process_one_batch(
+                        train_data, batch_x, batch_y, batch_x_mark, batch_y_mark)  # 現在の出力と正しい値
+                    # mask_attention_output
+                    loss = criterion(pred, true, mask_attention_pred)
+                else:
+                    loss = criterion(pred, true)  # 誤差計算
+
                 train_loss.append(loss.item())
 
                 if (i+1) % 100 == 0:
