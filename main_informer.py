@@ -35,9 +35,9 @@ parser.add_argument('--pred_len', type=int, default=24,
                     help='prediction sequence length')
 # Informer decoder input: concat[start token series(label_len), zero padding series(pred_len)]
 
-parser.add_argument('--enc_in', type=int, default=7,
+parser.add_argument('--enc_in', type=int, default=1,
                     help='encoder input size')  # 目的変数 1 + 説明変数 6 = 7 畳み込みレイヤの奥行きを示す
-parser.add_argument('--dec_in', type=int, default=7, help='decoder input size')
+parser.add_argument('--dec_in', type=int, default=1, help='decoder input size')
 parser.add_argument('--c_out', type=int, default=7, help='output size')
 parser.add_argument('--d_model', type=int, default=512,
                     help='dimension of model')
@@ -101,6 +101,13 @@ parser.add_argument('--three_dimension', type=bool, default=False,
                     help='enable three-dimensional attention')
 
 
+parser.add_argument('--d_feature', type=int, default=10,
+                    help='enable three-dimensional attention')
+
+parser.add_argument('--n_feature', type=int, default=7,
+                    help='enable three-dimensional attention')
+
+
 args = parser.parse_args()
 
 args.use_gpu = True if torch.cuda.is_available() and args.use_gpu else False
@@ -132,6 +139,7 @@ args.freq = args.freq[-1:]
 
 print('Args in experiment:')
 print(args)
+
 
 Exp = Exp_Informer
 

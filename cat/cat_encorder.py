@@ -26,9 +26,10 @@ class ConvLayer(nn.Module):
 
 
 class CAT_EncoderLayer(nn.Module):
-    def __init__(self, attention, d_model, d_ff=None, dropout=0.1, activation="relu"):
+    def __init__(self, attention, d_feature=10, n_feature=7, d_ff=None, dropout=0.1, activation="relu"):
         super(CAT_EncoderLayer, self).__init__()
-        d_ff = d_ff or 4*d_model  # 二分の1にする??
+        # d_ff = d_ff or 4*d_model
+        d_model = d_feature*n_feature
         self.attention = attention
         self.conv1 = nn.Conv1d(in_channels=d_model,
                                out_channels=d_ff, kernel_size=1)

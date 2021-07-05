@@ -4,10 +4,12 @@ import torch.nn.functional as F
 
 
 class CAT_DecoderLayer(nn.Module):
-    def __init__(self, self_attention, cross_attention, d_model, d_ff=None,
+    def __init__(self, self_attention, cross_attention,  d_feature=10, n_feature=7, d_ff=None,
                  dropout=0.1, activation="relu"):
         super(CAT_DecoderLayer, self).__init__()
-        d_ff = d_ff or 4*d_model
+        # d_ff = d_ff or 4*d_model
+        d_model = d_feature*n_feature
+
         self.self_attention = self_attention
         self.cross_attention = cross_attention
         self.conv1 = nn.Conv1d(in_channels=d_model,

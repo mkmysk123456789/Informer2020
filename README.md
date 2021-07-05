@@ -141,3 +141,7 @@ full
 
 python3 -u main_informer.py --model informer --data StepCount --attn full --freq h --data_path iPhone_StepCount_from_2017_to_2021_6_18.csv --root_path ./data/StepCount --target StepCount --enc_in 1 --dec_in 1 --c_out 1 --features S --pred_len 48
 
+
+CAT 
+
+python3 -u main_informer.py --model CAT --data ETTh1 --attn full --freq h  --enc_in 1 --dec_in 1 --c_out 1  --pred_len 24 --d_feature 10 --n_feature 7 --label_len 72

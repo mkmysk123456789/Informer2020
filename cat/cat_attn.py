@@ -9,7 +9,7 @@ from utils.masking import TriangularCausalMask, ProbMask
 
 
 class CAT_FullAttention(nn.Module):
-    def __init__(self, mask_flag=True, factor=5, scale=None, attention_dropout=0.1, output_attention=False):
+    def __init__(self, mask_flag=False, factor=5, scale=None, attention_dropout=0.1, output_attention=False):
         super(CAT_FullAttention, self).__init__()
         self.scale = scale
         self.mask_flag = mask_flag
@@ -25,17 +25,17 @@ class CAT_FullAttention(nn.Module):
         scores = torch.einsum("blp,bsq->bslq", queries, keys)
         # print(str(visualize))
         # これを可視化するにはどうしたらいいか
-        if visualize:
-            attention_weight = scores.to('cpu').detach().numpy().copy()
-            np.save("./results/attention/attention_weight.npy",
-                    attention_weight)
+        # if visualize:
+        #     attention_weight = scores.to('cpu').detach().numpy().copy()
+        #     np.save("./results/attention/attention_weight.npy",
+        #             attention_weight)
 
-        if self.mask_flag:
-            if attn_mask is None:
-                attn_mask = TriangularCausalMask(B, L, device=queries.device)
+        # if self.mask_flag:
+        #     if attn_mask is None:
+        #         attn_mask = TriangularCausalMask(B, L, device=queries.device)
 
-            # 動的ネットワーク?? 流れてくるデータに応じて構造が変わる??
-            scores.masked_fill_(attn_mask.mask, -np.inf)
+        #     # 動的ネットワーク?? 流れてくるデータに応じて構造が変わる??
+        #     scores.masked_fill_(attn_mask.mask, -np.inf)
 
         A = self.dropout(torch.softmax(scores, dim=-1))
         V = torch.einsum("blsp,bsq->blq", A, values)
@@ -148,32 +148,36 @@ class ProbAttention(nn.Module):
 
 
 class CAT_AttentionLayer(nn.Module):
-    def __init__(self, attention, d_feature=10, n_features=7,
+    def __init__(self, attention, d_feature=10, n_feature=7,
                  d_keys=None, d_values=None, mix=False):
         super(CAT_AttentionLayer, self).__init__()
 
         # d_keys = d_keys or (d_model//n_heads)
         # d_values = d_values or (d_model//n_heads)
-        d_model = d_feature * n_features
+        self.d_model = d_feature * n_feature
 
         self.inner_attention = attention
         # query_projectionがAttentionを計算するための学習対象になる
-        self.query_projection = nn.Linear(d_model, d_model)
-        self.key_projection = nn.Linear(d_model, d_model)
-        self.value_projection = nn.Linear(d_model, d_model)
-        self.out_projection = nn.Linear(d_model, d_model)
-        self.n_heads = n_heads  # 512
+        self.query_projection = nn.Linear(self.d_model, self.d_model)
+        self.key_projection = nn.Linear(self.d_model, self.d_model)
+        self.value_projection = nn.Linear(self.d_model, self.d_model)
+        self.out_projection = nn.Linear(self.d_model, self.d_model)
+        # self.n_heads = n_heads  # 512
         self.mix = mix
 
     def forward(self, queries, keys, values, attn_mask, visualize=False):
         # x , cross, cross なのでエンコーダの出力がkeyとqueriesになる
+
+        print("queries.shape : "+str(queries.shape))
+        print("keys.shape : "+str(keys.shape))
+
         B, L, _ = queries.shape
         _, S, _ = keys.shape
-        H = self.n_heads
+        # H = self.n_heads
 
-        queries = self.query_projection(queries).view(B, L, H, -1)
-        keys = self.key_projection(keys).view(B, S, H, -1)
-        values = self.value_projection(values).view(B, S, H, -1)
+        queries = self.query_projection(queries).view(B, L, self.d_model)
+        keys = self.key_projection(keys).view(B, S, self.d_model)
+        values = self.value_projection(values).view(B, S, self.d_model)
 
         out, attn = self.inner_attention(
             queries,

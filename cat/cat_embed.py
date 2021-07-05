@@ -27,15 +27,21 @@ class CAT_PositionalEmbedding(nn.Module):
 
     def forward(self, x):
         # # torch.Size([1, 96, 10]) -> torch.Size([10, 1, 96])
-        return self.pe[:, :x.size(1)].permute(2, 0, 1)
+        tmp_pe = self.pe[:, :x.size(1)].permute(2, 0, 1)
+        print("CAT_PositionalEmbedding forward : " + str(tmp_pe.size()))
+        return tmp_pe
 
 
 class CAT_TokenEmbedding(nn.Module):
     def __init__(self, c_in=1, d_feature=10):
         # 1 チャネルを10チャネルに拡張する
 
+        # print("c_in : "+str(c_in))
+        # print("d_feature : "+str(d_feature))
+
         super(CAT_TokenEmbedding, self).__init__()
         padding = 1 if torch.__version__ >= '1.5.0' else 2
+        # c_inがなぜか7になっている
         self.tokenConv = nn.Conv1d(in_channels=c_in, out_channels=d_feature,
                                    kernel_size=3, padding=padding, padding_mode='circular')
         # in_channel 7 out_channel 512
@@ -45,12 +51,16 @@ class CAT_TokenEmbedding(nn.Module):
                     m.weight, mode='fan_in', nonlinearity='leaky_relu')  # 重みの初期化
 
     def forward(self, x: torch.Tensor):  # どう考えてもこのxは二次元な気がする いや三次元 バッチ数があるので二次元から三次元になる
+        # print("CAT_TokenEmbedding forward : " + str(x.size()))
         # torch.Size([32, 96]) -> torch.Size([32, 1, 96]) unsqueeze
         x = x.unsqueeze(1)
+        # print("CAT_TokenEmbedding unsqueeze : " + str(x.size()))
+        x = x.transpose(0, 2)
+        # print("CAT_TokenEmbedding transpose : " + str(x.size()))
+        x = self.tokenConv(x).permute(1, 2, 0)
         # torch.Size([32, 1, 96]) ->  torch.Size([32, 10, 96]) tokenConv
         # torch.Size([32, 10, 96])-> torch.Size([10, 32, 96]) permute
-        x = self.tokenConv(x).permute(1, 0, 2)
-
+        print("CAT_TokenEmbedding permute : " + str(x.size()))
         return x
 
 
@@ -95,6 +105,9 @@ class CAT_TemporalEmbedding(nn.Module):
         self.month_embed = Embed(month_size, d_feature)
 
     def forward(self, x):
+        # print("CAT_TemporalEmbedding input : " +
+        #       str(x.size()))
+
         # このxはx_mark
         # temporalenb はmarkを使う
         x = x.long()
@@ -110,8 +123,17 @@ class CAT_TemporalEmbedding(nn.Module):
         month_x = self.month_embed(x[:, :, 0])
 
         # torch.Size([32, 96, 10])
+        # print("hour_x : " + str(hour_x.size()))
+        # print("weekday_x : " + str(weekday_x.size()))
+        # print("day_x : " + str(day_x.size()))
+        # print("month_x : " + str(month_x.size()))
+        # print("minute_x : " + str(minute_x.size()))
+
         temporal_embed = hour_x + weekday_x + day_x + month_x + minute_x
+
         temporal_embed = temporal_embed.permute(2, 0, 1)
+        print("CAT_TemporalEmbedding Output : " + str(temporal_embed.size()))
+
         return temporal_embed
 
 
@@ -125,25 +147,29 @@ class CAT_TimeFeatureEmbedding(nn.Module):
         self.embed = nn.Linear(d_inp, d_model)
 
     def forward(self, x):
+
         return self.embed(x)
 
 
 class CAT_DataEmbedding(nn.Module):
-    def __init__(self, c_in, d_feature=10, n_feature=7, embed_type='fixed', freq='h', dropout=0.1):
+    def __init__(self, c_in=1, d_feature=10, n_feature=7, embed_type='fixed', freq='h', dropout=0.1):
         super(CAT_DataEmbedding, self).__init__()
         self.n_feature = 7
 
         self.value_embedding = CAT_TokenEmbedding(
             c_in=c_in, d_feature=d_feature)  # CNNにより次元方向に拡張
         # 96のなかでどこに位置しているかを埋め込み表現
-        self.position_embedding = CAT_PositionalEmbedding(d_model=d_feature)
+        self.position_embedding = CAT_PositionalEmbedding(d_feature=d_feature)
         # ある一時点を見た時のその時刻のみの埋め込み表現
-        self.temporal_embedding = CAT_TemporalEmbedding(d_model=d_feature, embed_type=embed_type, freq=freq) if embed_type != 'timeF' else CAT_TimeFeatureEmbedding(
-            d_model=d_feature, embed_type=embed_type, freq=freq)
+        self.temporal_embedding = CAT_TemporalEmbedding(
+            d_feature=d_feature, embed_type=embed_type, freq=freq)
+        # if embed_type != 'timeF' else CAT_TimeFeatureEmbedding(
+        #     d_model=d_feature, embed_type=embed_type, freq=freq)
 
         self.dropout = nn.Dropout(p=dropout)
 
     def _embed(self, x, x_mark):
+        print("_embed : " + str(x.size()))
         # torch.Size([32, 96])
         # value_embedding -> torch.Size([10, 32, 96])
         # position_embedding -> torch.Size([10, 1, 96]) この1は32に自動で合わせられる
@@ -156,13 +182,15 @@ class CAT_DataEmbedding(nn.Module):
     def forward(self, x: torch.Tensor, x_mark):
         # n_feature数分繰り返して結合する
 
-        # torch.Size([96, 32, 7]) -> torch.Size([7, 32, 96])
-        x = x.transpose(2, 0)
+        # torch.Size([32, 96, 7]) -> torch.Size([7, 32, 96])
+        x = x.permute(2, 0, 1)
 
         # すべての変数について奥行きを10次元に拡張
-        output = torch.stack([self._embed(xi, x_mark) for xi in x])
+        output = torch.cat([self._embed(xi.clone(), x_mark) for xi in x])
 
-        # torch.Size([70, 96, 32]) -> torch.Size([96, 32, 70])
-        x = x.transpose(2, 0)
+        # torch.Size([70, 96, 32]) -> torch.Size([32, 96, 70])
+        output = output.permute(1, 2, 0)
 
-        return self.dropout(x)
+        print("forward transpose in CAT_DataEmbedding :  " + str(output.size()))
+
+        return self.dropout(output)

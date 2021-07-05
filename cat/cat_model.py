@@ -16,7 +16,7 @@ from cat.cat_embed import CAT_DataEmbedding
 
 class CAT(nn.Module):
     def __init__(self, enc_in, dec_in, c_out, seq_len, label_len, out_len,
-                 factor=5, d_feature=10, n_features=7, e_layers=3, d_layers=2, d_ff=512,
+                 factor=5, d_feature=10, n_feature=7, e_layers=3, d_layers=2, d_ff=512,
                  dropout=0.0, attn='normal', embed='fixed', freq='h', activation='gelu',
                  output_attention=False, distil=True, mix=True,
                  device=torch.device('cuda:0')):
@@ -25,13 +25,13 @@ class CAT(nn.Module):
         self.attn = attn
         self.output_attention = output_attention
 
-        self.d_model = d_feature * n_features
+        self.d_model = d_feature * n_feature
 
         # Encoding
         self.enc_embedding = CAT_DataEmbedding(
-            enc_in, d_model, embed, freq, dropout)
+            1, d_feature, n_feature, embed, freq, dropout)
         self.dec_embedding = CAT_DataEmbedding(
-            dec_in, d_model, embed, freq, dropout)
+            1, d_feature, n_feature, embed, freq, dropout)
         # Attention
         # Attn = ProbAttention if attn == 'prob' else FullAttention
         # Encoder
@@ -39,40 +39,42 @@ class CAT(nn.Module):
             [
                 CAT_EncoderLayer(
                     CAT_AttentionLayer(CAT_FullAttention(False, factor, attention_dropout=dropout, output_attention=output_attention),
-                                       d_feature=d_feature, n_features=n_features, mix=False),
-                    d_model,
-                    d_ff,
+                                       d_feature=d_feature, n_feature=n_feature, mix=False),
+                    d_feature=d_feature,
+                    n_feature=n_feature,
+                    d_ff=d_ff,
                     dropout=dropout,
                     activation=activation
                 ) for l in range(e_layers)
             ],
             [
                 ConvLayer(
-                    d_model
+                    self.d_model
                 ) for l in range(e_layers-1)
             ] if distil else None,  # default false
-            norm_layer=torch.nn.LayerNorm(d_model)  # これを変化??
+            norm_layer=torch.nn.LayerNorm(self.d_model)  # これを変化??
         )
         # Decoder
         self.decoder = CAT_Decoder(
             [
                 CAT_DecoderLayer(
                     CAT_AttentionLayer(CAT_FullAttention(True, factor, attention_dropout=dropout, output_attention=False),
-                                       d_feature=d_feature, n_features=n_features,  mix=mix),
+                                       d_feature=d_feature, n_feature=n_feature,  mix=mix),
                     CAT_AttentionLayer(CAT_FullAttention(False, factor, attention_dropout=dropout, output_attention=False),
-                                       d_feature=d_feature, n_features=n_features, mix=False),
-                    d_model,
-                    d_ff,
+                                       d_feature=d_feature, n_feature=n_feature, mix=False),
+                    d_feature=d_feature,
+                    n_feature=n_feature,
+                    d_ff=d_ff,
                     dropout=dropout,
                     activation=activation,
                 )
                 for l in range(d_layers)
             ],
-            norm_layer=torch.nn.LayerNorm(d_model)
+            norm_layer=torch.nn.LayerNorm(self.d_model)
         )
         # self.end_conv1 = nn.Conv1d(in_channels=label_len+out_len, out_channels=out_len, kernel_size=1, bias=True)
         # self.end_conv2 = nn.Conv1d(in_channels=d_model, out_channels=c_out, kernel_size=1, bias=True)
-        self.projection = nn.Linear(d_model, c_out, bias=True)
+        self.projection = nn.Linear(self.d_model, c_out, bias=True)
         # c_out = 7
 
     def forward(self, x_enc, x_mark_enc, x_dec, x_mark_dec,
@@ -96,13 +98,13 @@ class CAT(nn.Module):
 
 
 # エンコーダがたくさんあるということ??
-class InformerStack(nn.Module):
+class CAT_InformerStack(nn.Module):
     def __init__(self, enc_in, dec_in, c_out, seq_len, label_len, out_len,
                  factor=5, d_model=512, n_heads=8, e_layers=[3, 2, 1], d_layers=2, d_ff=512,
                  dropout=0.0, attn='prob', embed='fixed', freq='h', activation='gelu',
                  output_attention=False, distil=True, mix=True,
                  device=torch.device('cuda:0')):
-        super(InformerStack, self).__init__()
+        super(CAT_InformerStack, self).__init__()
         self.pred_len = out_len
         self.attn = attn
         self.output_attention = output_attention
