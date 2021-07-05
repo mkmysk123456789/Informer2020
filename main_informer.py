@@ -70,7 +70,7 @@ parser.add_argument('--mix', action='store_false',
 parser.add_argument('--cols', type=str, nargs='+', help='file list')
 parser.add_argument('--num_workers', type=int, default=0,
                     help='data loader num workers')
-parser.add_argument('--itr', type=int, default=2, help='experiments times')
+parser.add_argument('--itr', type=int, default=1, help='experiments times')
 parser.add_argument('--train_epochs', type=int, default=6, help='train epochs')
 parser.add_argument('--batch_size', type=int, default=32,
                     help='batch size of train input data')
