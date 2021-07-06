@@ -155,17 +155,17 @@ for ii in range(args.itr):  # default 2
 
     exp = Exp(args)  # set experiments
 
-    # if args.train:
-    #     print('>>>>>>>start training : {}>>>>>>>>>>>>>>>>>>>>>>>>>>'.format(setting))
-    #     exp.train(setting)
+    if args.train:
+        print('>>>>>>>start training : {}>>>>>>>>>>>>>>>>>>>>>>>>>>'.format(setting))
+        exp.train(setting)
 
-    # print('>>>>>>>testing : {}<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<'.format(setting))
-    # exp.test(setting)
+    print('>>>>>>>testing : {}<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<'.format(setting))
+    exp.test(setting)
 
     # if args.do_predict:
     print('>>>>>>>predicting : {}<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<'.format(setting))
-    exp.predict(setting, True)
+    exp.predict(setting, False)
 
     torch.cuda.empty_cache()
 
-send_line_notify()
+send_line_notify(message=setting)
