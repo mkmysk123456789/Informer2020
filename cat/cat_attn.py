@@ -37,7 +37,7 @@ class CAT_FullAttention(nn.Module):
         #     # 動的ネットワーク?? 流れてくるデータに応じて構造が変わる??
         #     scores.masked_fill_(attn_mask.mask, -np.inf)
 
-        A = self.dropout(torch.softmax(scores, dim=-1))
+        A = self.dropout(torch.softmax(scores, dim=-2))
         V = torch.einsum("blsq,bsq->blq", A, values)
 
         if self.output_attention:
