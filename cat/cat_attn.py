@@ -18,11 +18,11 @@ class CAT_FullAttention(nn.Module):
 
     def forward(self, queries, keys, values, attn_mask, visualize=False):
         # q, k, v 線形のNNを通ってくるが最初は同じ
-        B, L, P = queries.shape
-        B, S, Q = values.shape
+        B, L, R = queries.shape
+        B, S, P = values.shape
         # scale = self.scale or 1./sqrt(E)
 
-        scores = torch.einsum("blq,bsq->blsq", queries, keys)
+        scores = torch.einsum("blr,bsp->blspr", queries, keys)
         # print(str(visualize))
         # これを可視化するにはどうしたらいいか
         if visualize:
@@ -37,13 +37,13 @@ class CAT_FullAttention(nn.Module):
         #     # 動的ネットワーク?? 流れてくるデータに応じて構造が変わる??
         #     scores.masked_fill_(attn_mask.mask, -np.inf)
 
-        scores = scores.view(B, L, -1)
-        scores = torch.softmax(scores, dim=-1)
-        scores = scores.view(B, L, S, -1)
+        scores = scores.view(B, L, -1, R)
+        scores = torch.softmax(scores, dim=-2)
+        scores = scores.view(B, L, S, P, -1)
 
         A = self.dropout(scores)
 
-        V = torch.einsum("blsq,bsq->blq", A, values)
+        V = torch.einsum("bsp,blspr->blr", A, values)
 
         if self.output_attention:
             return (V.contiguous(), A)
