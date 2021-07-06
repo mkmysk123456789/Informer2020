@@ -155,9 +155,9 @@ for ii in range(args.itr):  # default 2
 
     exp = Exp(args)  # set experiments
 
-    if args.train:
-        print('>>>>>>>start training : {}>>>>>>>>>>>>>>>>>>>>>>>>>>'.format(setting))
-        exp.train(setting)
+    # if args.train:
+    #     print('>>>>>>>start training : {}>>>>>>>>>>>>>>>>>>>>>>>>>>'.format(setting))
+    #     exp.train(setting)
 
     # print('>>>>>>>testing : {}<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<'.format(setting))
     # exp.test(setting)
