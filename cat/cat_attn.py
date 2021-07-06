@@ -180,6 +180,10 @@ class CAT_AttentionLayer(nn.Module):
         _, S, _ = keys.shape
         # H = self.n_heads
 
+        # query [32,96,70]
+
+        # queries = queries.view(B, -1)
+
         queries = self.query_projection(queries).view(B, L, self.d_model)
         keys = self.key_projection(keys).view(B, S, self.d_model)
         values = self.value_projection(values).view(B, S, self.d_model)

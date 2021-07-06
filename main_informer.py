@@ -107,6 +107,9 @@ parser.add_argument('--d_feature', type=int, default=10,
 parser.add_argument('--n_feature', type=int, default=7,
                     help='enable three-dimensional attention')
 
+parser.add_argument('--train', type=bool, default=True,
+                    help='enable three-dimensional attention')
+
 
 args = parser.parse_args()
 
@@ -151,8 +154,10 @@ for ii in range(args.itr):  # default 2
                                                                                                          args.embed, args.distil, args.mix, args.des, ii)
 
     exp = Exp(args)  # set experiments
-    print('>>>>>>>start training : {}>>>>>>>>>>>>>>>>>>>>>>>>>>'.format(setting))
-    exp.train(setting)
+
+    if args.train:
+        print('>>>>>>>start training : {}>>>>>>>>>>>>>>>>>>>>>>>>>>'.format(setting))
+        exp.train(setting)
 
     # print('>>>>>>>testing : {}<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<'.format(setting))
     # exp.test(setting)

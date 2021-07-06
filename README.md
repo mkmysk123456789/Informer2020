@@ -145,3 +145,9 @@ python3 -u main_informer.py --model informer --data StepCount --attn full --freq
 CAT 
 
 python3 -u main_informer.py --model CAT --data ETTh1 --attn full --freq h  --enc_in 1 --dec_in 1 --c_out 1  --pred_len 24 --d_feature 10 --n_feature 7 --label_len 72
+
+python3 -u main_informer.py --model CAT --data ETTh1 --attn full --freq h  --enc_in 1 --dec_in 1 --c_out 1  --pred_len 24 --d_feature 10 --n_feature 7 --label_len 72 --batch_size 10 --train_epochs 2
+
+train False
+
+python3 -u main_informer.py --model CAT --data ETTh1 --attn full --freq h  --enc_in 1 --dec_in 1 --c_out 1  --pred_len 24 --d_feature 10 --n_feature 7 --label_len 72 --batch_size 10 --train_epochs 2 --train False
