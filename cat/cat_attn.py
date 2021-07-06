@@ -43,7 +43,7 @@ class CAT_FullAttention(nn.Module):
 
         A = self.dropout(scores)
 
-        V = torch.einsum("bsp,blspr->blr", A, values)
+        V = torch.einsum("bsp,blspr->blr", values, A)
 
         if self.output_attention:
             return (V.contiguous(), A)
