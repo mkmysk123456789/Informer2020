@@ -157,15 +157,18 @@ class CAT_AttentionLayer(nn.Module):
                  d_keys=None, d_values=None, mix=False):
         super(CAT_AttentionLayer, self).__init__()
 
+        self.seq_len = 96
+
         # d_keys = d_keys or (d_model//n_heads)
         # d_values = d_values or (d_model//n_heads)
         self.d_model = d_feature * n_feature
+        self.linear_size = self.d_model*self.seq_len
 
         self.inner_attention = attention
         # query_projectionがAttentionを計算するための学習対象になる
-        self.query_projection = nn.Linear(self.d_model, self.d_model)
-        self.key_projection = nn.Linear(self.d_model, self.d_model)
-        self.value_projection = nn.Linear(self.d_model, self.d_model)
+        self.query_projection = nn.Linear(self.linear_size, self.linear_size)
+        self.key_projection = nn.Linear(self.linear_size, self.linear_size)
+        self.value_projection = nn.Linear(self.linear_size, self.linear_size)
         self.out_projection = nn.Linear(self.d_model, self.d_model)
         # self.n_heads = n_heads  # 512
         self.mix = mix
@@ -182,7 +185,9 @@ class CAT_AttentionLayer(nn.Module):
 
         # query [32,96,70]
 
-        # queries = queries.view(B, -1)
+        queries = queries.view(B, -1)
+        keys = keys.view(B, -1)
+        values = values.view(B, -1)
 
         queries = self.query_projection(queries).view(B, L, self.d_model)
         keys = self.key_projection(keys).view(B, S, self.d_model)
