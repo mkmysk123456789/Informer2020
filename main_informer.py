@@ -146,7 +146,11 @@ print(args)
 
 Exp = Exp_Informer
 
+send_line_notify(message="start learning")
+
+
 for ii in range(args.itr):  # default 2
+
     # setting record of experiments
     setting = '{}_{}_ft{}_sl{}_ll{}_pl{}_dm{}_nh{}_el{}_dl{}_df{}_at{}_fc{}_eb{}_dt{}_mx{}_{}_{}'.format(args.model, args.data, args.features,
                                                                                                          args.seq_len, args.label_len, args.pred_len,
