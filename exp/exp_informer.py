@@ -117,7 +117,7 @@ class Exp_Informer(Exp_Basic):
             drop_last = False
             batch_size = args.batch_size  # どういう意味??
             freq = args.detail_freq
-            # Data = Dataset_Pred  # 予測するならdatasetは予測専用のものに変更する
+            Data = Dataset_Pred  # 予測するならdatasetは予測専用のものに変更する
         else:  # train?? val ??
             shuffle_flag = True
             drop_last = True

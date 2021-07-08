@@ -5,7 +5,7 @@ import torch.nn.functional as F
 import numpy as np
 
 from math import sqrt
-from utils.masking import TriangularCausalMask, ProbMask
+from utils.masking import TriangularCausalMask, ProbMask, CAT_TriangularCausalMask
 
 
 class CAT_FullAttention(nn.Module):
@@ -32,7 +32,14 @@ class CAT_FullAttention(nn.Module):
 
         scores = torch.einsum("blep,bser->blspr", queries, keys)
         # print(str(visualize))
-        # これを可視化するにはどうしたらいいか
+
+        if self.mask_flag:
+            if attn_mask is None:
+                attn_mask = CAT_TriangularCausalMask(
+                    B, L, 7, 7, device=queries.device)
+
+            scores.masked_fill_(attn_mask.mask, -np.inf)
+
         if visualize:
             attention_weight = scores.to('cpu').detach().numpy().copy()
             np.save("./results/attention/attention_weight.npy",
