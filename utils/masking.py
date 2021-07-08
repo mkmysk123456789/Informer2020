@@ -30,7 +30,7 @@ class ProbMask():
 
 class CAT_TriangularCausalMask():
     def __init__(self, B, L, R, P, device="cpu"):
-        mask_shape = [B, 1, L, L, R, P]
+        mask_shape = [B, L, L, R, P]
         with torch.no_grad():
             self._mask = torch.triu(torch.ones(
                 mask_shape, dtype=torch.bool), diagonal=1).to(device)
