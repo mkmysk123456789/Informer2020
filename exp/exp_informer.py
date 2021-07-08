@@ -365,6 +365,8 @@ class Exp_Informer(Exp_Basic):
         np.save(folder_path+'pred_preds.npy', preds)
         np.save(folder_path+'pred_trues.npy', trues)
 
+        send_line_notify(message='Predict : mse:{}, mae:{}'.format(mse, mae))
+
         return
 
     # 一回のbatchに対してのモデル全体を通して出力を計算, 正解の値も返す

@@ -172,4 +172,4 @@ for ii in range(args.itr):  # default 2
 
     torch.cuda.empty_cache()
 
-send_line_notify(message=setting)
+send_line_notify(message="finish learning : "+setting)
