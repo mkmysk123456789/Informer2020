@@ -185,9 +185,9 @@ class CAT_AttentionLayer(nn.Module):
 
         # query [32,96,70]
 
-        queries = queries.view(B, -1)
-        keys = keys.view(B, -1)
-        values = values.view(B, -1)
+        queries = queries.reshape(B, -1)
+        keys = keys.reshape(B, -1)
+        values = values.reshape(B, -1)
 
         queries = self.query_projection(queries).view(B, L, self.d_model)
         keys = self.key_projection(keys).view(B, S, self.d_model)
