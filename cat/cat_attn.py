@@ -16,13 +16,21 @@ class CAT_FullAttention(nn.Module):
         self.output_attention = output_attention
         self.dropout = nn.Dropout(attention_dropout)
 
+    # attention weight size 96 * 96 * 7 * 7
+
     def forward(self, queries, keys, values, attn_mask, visualize=False):
+
         # q, k, v 線形のNNを通ってくるが最初は同じ
         B, L, R = queries.shape
         B, S, P = values.shape
         # scale = self.scale or 1./sqrt(E)
 
-        scores = torch.einsum("blr,bsp->blspr", queries, keys)
+        # 32 * 96 * 10 * 7
+        queries = queries.view(B, L, -1, 7)
+        values = values.view(B, L, -1, 7)
+        keys = keys.view(B, L, -1, 7)
+
+        scores = torch.einsum("blep,bser->blspr", queries, keys)
         # print(str(visualize))
         # これを可視化するにはどうしたらいいか
         if visualize:
@@ -30,25 +38,56 @@ class CAT_FullAttention(nn.Module):
             np.save("./results/attention/attention_weight.npy",
                     attention_weight)
 
-        # if self.mask_flag:
-        #     if attn_mask is None:
-        #         attn_mask = TriangularCausalMask(B, L, device=queries.device)
-
-        #     # 動的ネットワーク?? 流れてくるデータに応じて構造が変わる??
-        #     scores.masked_fill_(attn_mask.mask, -np.inf)
-
-        scores = scores.view(B, L, -1, R)
+        scores = scores.view(B, L, -1, 7)
         scores = torch.softmax(scores, dim=-2)
-        scores = scores.view(B, L, S, P, -1)
+        scores = scores.view(B, L, S, 10, -1)
 
         A = self.dropout(scores)
 
-        V = torch.einsum("bsp,blspr->blr", values, A)
+        V = torch.einsum("bser,blspr->blep", values, A)
+
+        V = V.view(B, L, 70)
 
         if self.output_attention:
             return (V.contiguous(), A)
         else:
             return (V.contiguous(), None)
+
+    # # attention weight size 96 * 96 * 70 * 70
+    # def forward(self, queries, keys, values, attn_mask, visualize=False):
+
+    #     # q, k, v 線形のNNを通ってくるが最初は同じ
+    #     B, L, R = queries.shape
+    #     B, S, P = values.shape
+    #     # scale = self.scale or 1./sqrt(E)
+
+    #     scores = torch.einsum("blr,bsp->blspr", queries, keys)
+    #     # print(str(visualize))
+    #     # これを可視化するにはどうしたらいいか
+    #     if visualize:
+    #         attention_weight = scores.to('cpu').detach().numpy().copy()
+    #         np.save("./results/attention/attention_weight.npy",
+    #                 attention_weight)
+
+    #     # if self.mask_flag:
+    #     #     if attn_mask is None:
+    #     #         attn_mask = TriangularCausalMask(B, L, device=queries.device)
+
+    #     #     # 動的ネットワーク?? 流れてくるデータに応じて構造が変わる??
+    #     #     scores.masked_fill_(attn_mask.mask, -np.inf)
+
+    #     scores = scores.view(B, L, -1, R)
+    #     scores = torch.softmax(scores, dim=-2)
+    #     scores = scores.view(B, L, S, P, -1)
+
+    #     A = self.dropout(scores)
+
+    #     V = torch.einsum("bsp,blspr->blr", values, A)
+
+    #     if self.output_attention:
+    #         return (V.contiguous(), A)
+    #     else:
+    #         return (V.contiguous(), None)
 
 
 class ProbAttention(nn.Module):
