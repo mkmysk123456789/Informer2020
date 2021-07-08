@@ -38,15 +38,15 @@ class CAT_FullAttention(nn.Module):
             np.save("./results/attention/attention_weight.npy",
                     attention_weight)
 
-        scores = scores.view(B, L, -1, 7)
+        scores = scores.reshape(B, L, -1, 7)
         scores = torch.softmax(scores, dim=-2)
-        scores = scores.view(B, L, S, 10, -1)
+        scores = scores.reshape(B, L, S, 10, -1)
 
         A = self.dropout(scores)
 
         V = torch.einsum("bser,blspr->blep", values, A)
 
-        V = V.view(B, L, 70)
+        V = V.reshape(B, L, 70)
 
         if self.output_attention:
             return (V.contiguous(), A)
