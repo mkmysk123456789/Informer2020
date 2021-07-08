@@ -115,7 +115,7 @@ class Exp_Informer(Exp_Basic):
         elif flag == 'pred':
             shuffle_flag = True
             drop_last = False
-            batch_size = 1  # どういう意味??
+            batch_size = 32  # どういう意味??
             freq = args.detail_freq
             Data = Dataset_Pred  # 予測するならdatasetは予測専用のものに変更する
         else:  # train?? val ??
