@@ -265,9 +265,11 @@ class Exp_Informer(Exp_Basic):
             adjust_learning_rate(model_optim, epoch+1, self.args)
 
             # line notify
-            send_line_notify(message="Epoch: {} cost time: {}".format(
-                epoch+1, time.time()-epoch_time)+"Epoch: {0}, Steps: {1} | Train Loss: {2:.7f} Vali Loss: {3:.7f} Test Loss: {4:.7f}".format(
-                epoch + 1, train_steps, train_loss, vali_loss, test_loss))
+            send_notify = False
+            if send_notify:
+                send_line_notify(message="Epoch: {} cost time: {}".format(
+                    epoch+1, time.time()-epoch_time)+"Epoch: {0}, Steps: {1} | Train Loss: {2:.7f} Vali Loss: {3:.7f} Test Loss: {4:.7f}".format(
+                    epoch + 1, train_steps, train_loss, vali_loss, test_loss))
 
         best_model_path = path+'/'+'checkpoint.pth'
         self.model.load_state_dict(torch.load(best_model_path))  # いつセーブした?
