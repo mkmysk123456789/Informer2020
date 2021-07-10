@@ -203,7 +203,7 @@ class CAT_AttentionLayer(nn.Module):
                  d_keys=None, d_values=None, mix=False):
         super(CAT_AttentionLayer, self).__init__()
 
-        self.seq_len = 96
+        self.seq_len = 48
 
         # d_keys = d_keys or (d_model//n_heads)
         # d_values = d_values or (d_model//n_heads)
