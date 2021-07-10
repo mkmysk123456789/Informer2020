@@ -47,7 +47,7 @@ class CAT_FullAttention(nn.Module):
 
         scores = scores.reshape(B, L, -1, 7)
         scores = torch.softmax(scores, dim=-2)
-        scores = scores.reshape(B, 96, 96, 7, -1)
+        scores = scores.reshape(B, L, L, 7, -1)
 
         A = self.dropout(scores)
 
