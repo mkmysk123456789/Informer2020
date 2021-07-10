@@ -52,7 +52,9 @@ class Dataset_ETT_hour(Dataset):
         # 12 month 30 day 24 hour
         border1s = [0, 12*30*24 - self.seq_len,
                     12*30*24+4*30*24 - self.seq_len]
-        # train の場合は0 val : 1年から引き算 predict : 2年から引き算
+        # train の場合は0から一年
+        # val : 1年4ヶ月の96時点
+        # test : 一年4ヶ月から1年八ヶ月
         border2s = [12*30*24, 12*30*24+4*30*24, 12*30*24+8*30*24]
         border1 = border1s[self.set_type]  # 複数形
         border2 = border2s[self.set_type]
@@ -438,7 +440,7 @@ class Dataset_StepCount(Dataset):
 
 class Dataset_Pred(Dataset):
     def __init__(self, root_path, flag='pred', size=None,
-                 features='S', data_path='ETTh1.csv',
+                 features='M', data_path='ETTh1.csv',
                  target='OT', scale=True, inverse=False, timeenc=0, freq='h', cols=None):
         # size [seq_len, label_len, pred_len]
         # info
@@ -480,6 +482,7 @@ class Dataset_Pred(Dataset):
             cols.remove('date')
         df_raw = df_raw[['date']+cols+[self.target]]
 
+        # 予測では最後の値を使う
         border1 = len(df_raw)-self.seq_len
         border2 = len(df_raw)
 
@@ -499,6 +502,7 @@ class Dataset_Pred(Dataset):
         tmp_stamp['date'] = pd.to_datetime(tmp_stamp.date)
         pred_dates = pd.date_range(
             tmp_stamp.date.values[-1], periods=self.pred_len+1, freq=self.freq)
+        # priods 個数指定
 
         df_stamp = pd.DataFrame(columns=['date'])
         df_stamp.date = list(tmp_stamp.date.values) + list(pred_dates[1:])
