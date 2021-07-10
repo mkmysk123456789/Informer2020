@@ -51,8 +51,8 @@ class CAT_FullAttention(nn.Module):
 
         A = self.dropout(scores)
 
-        V = torch.einsum("bser,blspr->blep", values, A)
-
+        # V = torch.einsum("bser,blspr->blep", values, A)
+        V = torch.einsum("bsep,blspr->bler", values, A)
         V = V.reshape(B, L, 70)
 
         if self.output_attention:
