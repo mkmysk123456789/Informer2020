@@ -27,7 +27,7 @@ parser.add_argument('--freq', type=str, default='h',
 parser.add_argument('--checkpoints', type=str,
                     default='./checkpoints/', help='location of model checkpoints')
 
-parser.add_argument('--seq_len', type=int, default=96,
+parser.add_argument('--seq_len', type=int, default=48,
                     help='input sequence length of Informer encoder')
 parser.add_argument('--label_len', type=int, default=48,
                     help='start token length of Informer decoder')
@@ -70,7 +70,7 @@ parser.add_argument('--mix', action='store_false',
 parser.add_argument('--cols', type=str, nargs='+', help='file list')
 parser.add_argument('--num_workers', type=int, default=0,
                     help='data loader num workers')
-parser.add_argument('--itr', type=int, default=1, help='experiments times')
+parser.add_argument('--itr', type=int, default=5, help='experiments times')
 parser.add_argument('--train_epochs', type=int, default=6, help='train epochs')
 parser.add_argument('--batch_size', type=int, default=32,
                     help='batch size of train input data')
