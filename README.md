@@ -141,6 +141,10 @@ full
 
 python3 -u main_informer.py --model informer --data StepCount --attn full --freq h --data_path iPhone_StepCount_from_2017_to_2021_6_18.csv --root_path ./data/StepCount --target StepCount --enc_in 1 --dec_in 1 --c_out 1 --features S --pred_len 48
 
+train False
+
+python3 -u main_informer.py --model CAT --data ETTh1 --attn full --freq h  --enc_in 1 --dec_in 1 --c_out 1  --pred_len 24 --d_feature 10 --n_feature 7 --label_len 72 --batch_size 10 --train_epochs 2 --train False
+
 
 CAT 
 
@@ -148,6 +152,8 @@ python3 -u main_informer.py --model CAT --data ETTh1 --attn full --freq h  --enc
 
 python3 -u main_informer.py --model CAT --data ETTh1 --attn full --freq h  --enc_in 1 --dec_in 1 --c_out 1  --pred_len 24 --d_feature 10 --n_feature 7 --label_len 48 --batch_size 32 --train_epochs 20 --seq_len 48
 
-train False
 
-python3 -u main_informer.py --model CAT --data ETTh1 --attn full --freq h  --enc_in 1 --dec_in 1 --c_out 1  --pred_len 24 --d_feature 10 --n_feature 7 --label_len 72 --batch_size 10 --train_epochs 2 --train False
+CAT layer
+
+python3 -u main_informer.py --model CAT --data ETTh1 --attn full --freq h  --enc_in 1 --dec_in 1 --c_out 1  --pred_len 24 --d_feature 10 --n_feature 7 --label_len 48 --batch_size 32 --train_epochs 20 --seq_len 48 --e_layers 3 --d_layers 2
+
