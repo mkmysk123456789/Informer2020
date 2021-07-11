@@ -310,6 +310,9 @@ class Exp_Informer(Exp_Basic):
         np.save(folder_path+'pred.npy', preds)
         np.save(folder_path+'true.npy', trues)
 
+        send_line_notify(
+            message='test : mse:{}, mae:{}'.format(mse, mae)+"\nsetting : "+setting)
+
         return
 
     def predict(self, setting, load=False):
