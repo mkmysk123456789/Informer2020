@@ -30,7 +30,7 @@ class CAT_FullAttention(nn.Module):
         values = values.view(B, L, -1, 7)
         keys = keys.view(B, L, -1, 7)
 
-        scores = torch.einsum("blep,bser->blspr", queries, keys)
+        scores = torch.einsum("bler,bsep->blspr", queries, keys)
         # print(str(visualize))
 
         if self.mask_flag:
