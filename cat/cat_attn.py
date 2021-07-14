@@ -53,7 +53,7 @@ class CAT_FullAttention(nn.Module):
 
         # V = torch.einsum("bser,blspr->blep", values, A)
         V = torch.einsum("bsep,blspr->bler", values, A)
-        V = V.reshape(B, L, 448)
+        V = V.reshape(B, L, -1)
 
         if self.output_attention:
             return (V.contiguous(), A)
