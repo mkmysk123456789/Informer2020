@@ -108,7 +108,7 @@ class Exp_Informer(Exp_Basic):
         timeenc = 0 if args.embed != 'timeF' else 1
 
         if flag == 'test':
-            shuffle_flag = False
+            shuffle_flag = True  # 論文の実験条件と合わせる
             drop_last = True
             batch_size = args.batch_size
             freq = args.freq
@@ -285,6 +285,10 @@ class Exp_Informer(Exp_Basic):
         trues = []
 
         for i, (batch_x, batch_y, batch_x_mark, batch_y_mark) in enumerate(tqdm(test_loader)):
+            # 5回だけ実行
+            if i >= 5:
+                break
+
             pred, true = self._process_one_batch(
                 test_data, batch_x, batch_y, batch_x_mark, batch_y_mark)
             preds.append(pred.detach().cpu().numpy())
