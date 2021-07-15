@@ -61,7 +61,7 @@ class Axial_Attention(nn.Module):
 
         if self.mask_flag:
             attn_mask = Axial_TriangularCausalMask(
-                B, R, R, device=queries.device)
+                B, R, device=queries.device)
 
             scores_feature.masked_fill_(attn_mask.mask, -np.inf)
 
