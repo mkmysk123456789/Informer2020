@@ -57,8 +57,8 @@ class Axial_Attention(nn.Module):
         A_time = A_time.view(B, L, -1)
 
         # attention map 適用
-        V_time = torch.einsum("bsep,bls->blep", values, A_time)
-        V_time = V_time.reshape(B, L, -1)
+        # V_time = torch.einsum("bsep,bls->blep", values, A_time)
+        # V_time = V_time.reshape(B, L, -1)
 
         # 特徴量方向
         scores_feature = torch.einsum("bler,bsep->brp", queries, keys)
@@ -83,12 +83,14 @@ class Axial_Attention(nn.Module):
         A_feature = torch.softmax(A_feature, dim=-1)
         A_feature = A_feature.view(B, R, -1)
 
-        V_feature = torch.einsum("bsep,brp->bler", values, A_feature)
+        # V_feature = torch.einsum("bsep,brp->bler", values, A_feature)
 
-        V_feature = V_feature.reshape(B, L, -1)
+        # V_feature = V_feature.reshape(B, L, -1)
 
         # V_time と V_feature を合わせる
-        V = V_time + V_feature
+        # V = V_time + V_feature
+
+        V = torch.einsum("bsep,bls,brp->bler", values, A_time, A_feature)
 
         # 二つのattention mapから一つのattention mapを作る
         # A_time_feature = torch.einsum("bls,brp->blr", A_time, A_feature)
@@ -99,7 +101,7 @@ class Axial_Attention(nn.Module):
 
         # attention map 適用
         # V = torch.einsum("bsep,bsp->bsep", values, A_time_feature)
-        # V = V.reshape(B, L, -1)
+        V = V.reshape(B, L, -1)
 
         if self.output_attention:
             return (V.contiguous(), A_time)
