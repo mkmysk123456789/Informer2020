@@ -177,4 +177,7 @@ for ii in range(args.itr):  # default 2
 
     torch.cuda.empty_cache()
 
-send_line_notify(message="finish learning : "+setting)
+
+t = time.time() - start
+
+send_line_notify(message="finish learning : "+str(t/60))
