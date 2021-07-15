@@ -76,7 +76,7 @@ class Axial_Attention(nn.Module):
         A_feature = self.dropout(scores_feature)
 
         # 二つのattention mapから一つのattention mapを作る
-        A_time_feature = torch.einsum("bls,brp->blr", A_time, A_feature)
+        A_time_feature = torch.einsum("bls,brp->bsp", A_time, A_feature)
         # 二次元でsoftmax
         A_time_feature = A_time_feature.view(B, -1)
         A_time_feature = torch.softmax(A_time_feature, dim=-1)

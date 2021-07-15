@@ -6,6 +6,8 @@ from exp.exp_informer import Exp_Informer
 
 from linenotify import send_line_notify
 
+import time
+
 parser = argparse.ArgumentParser(
     description='[Informer] Long Sequences Forecasting')
 
@@ -145,6 +147,9 @@ print(args)
 
 
 Exp = Exp_Informer
+
+
+start = time.time()
 
 send_line_notify(message="start learning")
 
