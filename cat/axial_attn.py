@@ -81,7 +81,7 @@ class Axial_Attention(nn.Module):
 
         A_feature = A_feature.view(B, -1)
         A_feature = torch.softmax(A_feature, dim=-1)
-        A_feature = A_feature.view(B, L, -1)
+        A_feature = A_feature.view(B, R, -1)
 
         V_feature = torch.einsum("bsep,brp->bler", values, A_feature)
 
