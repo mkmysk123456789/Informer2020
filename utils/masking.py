@@ -42,7 +42,7 @@ class CAT_TriangularCausalMask():
 
 class Axial_TriangularCausalMask():
     def __init__(self, B, L, device="cpu"):
-        mask_shape = [B, 1, L, L]
+        mask_shape = [B, L, L]
         with torch.no_grad():
             self._mask = torch.triu(torch.ones(
                 mask_shape, dtype=torch.bool), diagonal=1).to(device)
