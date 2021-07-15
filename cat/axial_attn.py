@@ -83,7 +83,7 @@ class Axial_Attention(nn.Module):
         A_time_feature = A_time_feature.view(B, L, -1)
 
         # attention map 適用
-        V = torch.einsum("bler,blr->bler", values, A_time_feature)
+        V = torch.einsum("bsep,blr->bler", values, A_time_feature)
         V = V.reshape(B, L, -1)
 
         if self.output_attention:
