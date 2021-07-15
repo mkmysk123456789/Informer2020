@@ -12,6 +12,7 @@ from cat.cat_attn import CAT_FullAttention, CAT_AttentionLayer
 from cat.cat_encorder import CAT_Encoder, CAT_EncoderLayer
 from cat.cat_decorder import CAT_Decoder, CAT_DecoderLayer
 from cat.cat_embed import CAT_DataEmbedding
+from cat.axial_attn import Axial_Attention
 
 
 class CAT(nn.Module):
@@ -32,13 +33,22 @@ class CAT(nn.Module):
             1, d_feature, n_feature, embed, freq, dropout)
         self.dec_embedding = CAT_DataEmbedding(
             1, d_feature, n_feature, embed, freq, dropout)
+
         # Attention
-        # Attn = ProbAttention if attn == 'prob' else FullAttention
+        if attn == 'prob':
+            Attn = ProbAttention
+        elif attn == 'CAT':
+            Attn = FullAttention
+        elif attn == 'Axial':
+            Attn = Axial_Attention
+        else:
+            Attn = None
+
         # Encoder
         self.encoder = CAT_Encoder(
             [
                 CAT_EncoderLayer(
-                    CAT_AttentionLayer(CAT_FullAttention(False, factor, attention_dropout=dropout, output_attention=output_attention),
+                    CAT_AttentionLayer(Attn(False, factor, attention_dropout=dropout, output_attention=output_attention),
                                        d_feature=d_feature, n_feature=n_feature, mix=False),
                     d_feature=d_feature,
                     n_feature=n_feature,
@@ -58,9 +68,9 @@ class CAT(nn.Module):
         self.decoder = CAT_Decoder(
             [
                 CAT_DecoderLayer(
-                    CAT_AttentionLayer(CAT_FullAttention(True, factor, attention_dropout=dropout, output_attention=False),
+                    CAT_AttentionLayer(Attn(True, factor, attention_dropout=dropout, output_attention=False),
                                        d_feature=d_feature, n_feature=n_feature,  mix=mix),
-                    CAT_AttentionLayer(CAT_FullAttention(False, factor, attention_dropout=dropout, output_attention=False),
+                    CAT_AttentionLayer(Attn(False, factor, attention_dropout=dropout, output_attention=False),
                                        d_feature=d_feature, n_feature=n_feature, mix=False),
                     d_feature=d_feature,
                     n_feature=n_feature,
