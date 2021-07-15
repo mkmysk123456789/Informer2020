@@ -48,7 +48,7 @@ class Axial_Attention(nn.Module):
             np.save("./results/attention/attention_map_time.npy",
                     attention_map_time)
 
-        scores_time = torch.softmax(scores_time, dim=-2)
+        # scores_time = torch.softmax(scores_time, dim=-2)
 
         A_time = self.dropout(scores_time)
 
@@ -71,7 +71,7 @@ class Axial_Attention(nn.Module):
             np.save("./results/attention/attention_map_feature.npy",
                     attention_map_feature)
 
-        scores_feature = torch.softmax(scores_feature, dim=-2)
+        # scores_feature = torch.softmax(scores_feature, dim=-2)
 
         A_feature = self.dropout(scores_feature)
 
@@ -83,7 +83,7 @@ class Axial_Attention(nn.Module):
         A_time_feature = A_time_feature.view(B, L, -1)
 
         # attention map 適用
-        V = torch.einsum("bsep,blr->bler", values, A_time_feature)
+        V = torch.einsum("bler,blr->bler", values, A_time_feature)
         V = V.reshape(B, L, -1)
 
         if self.output_attention:
