@@ -39,7 +39,7 @@ class Axial_Attention(nn.Module):
         if self.mask_flag:
             if attn_mask is None:
                 attn_mask = Axial_TriangularCausalMask(
-                    B, L, L, device=queries.device)
+                    B, L, device=queries.device)
 
             scores_time.masked_fill_(attn_mask.mask, -np.inf)
 
