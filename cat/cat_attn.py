@@ -40,7 +40,7 @@ class CAT_FullAttention(nn.Module):
 
             scores.masked_fill_(attn_mask.mask, -np.inf)
 
-        if visualize:
+        if True:
             attention_weight = scores.to('cpu').detach().numpy().copy()
             np.save("./results/attention/attention_weight.npy",
                     attention_weight)

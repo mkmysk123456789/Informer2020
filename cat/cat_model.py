@@ -38,7 +38,7 @@ class CAT(nn.Module):
         if attn == 'prob':
             Attn = ProbAttention
         elif attn == 'CAT':
-            Attn = FullAttention
+            Attn = CAT_FullAttention
         elif attn == 'Axial':
             Attn = Axial_Attention
         else:
