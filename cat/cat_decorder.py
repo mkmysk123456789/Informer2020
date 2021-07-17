@@ -29,7 +29,7 @@ class CAT_DecoderLayer(nn.Module):
     def forward(self, x, cross, x_mask=None, cross_mask=None, visualize=False):
         x = x + self.dropout(self.self_attention(
             x, x, x,
-            attn_mask=x_mask
+            attn_mask=x_mask, visualize=visualize
         )[0])
         x = self.norm1(x)
 
@@ -38,13 +38,13 @@ class CAT_DecoderLayer(nn.Module):
             attn_mask=cross_mask
         )[0])
 
-        x = self.norm4(x)
+        # x = self.norm4(x)
 
-        if self.self_attention_2 != None:
-            x = x + self.dropout(self.self_attention_2(
-                x, x, x,
-                attn_mask=cross_mask, visualize=visualize
-            )[0])
+        # if self.self_attention_2 != None:
+        #     x = x + self.dropout(self.self_attention_2(
+        #         x, x, x,
+        #         attn_mask=cross_mask, visualize=visualize
+        #     )[0])
 
         y = x = self.norm2(x)
 
