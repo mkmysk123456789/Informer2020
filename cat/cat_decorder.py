@@ -63,7 +63,7 @@ class CAT_Decoder(nn.Module):
     def forward(self, x, cross, x_mask=None, cross_mask=None):
         for i, layer in enumerate(self.layers):
             # if i==0: visualize=True
-            visualize = True if i == 1 else False
+            visualize = True if i == 0 else False
             x = layer(x, cross, x_mask=x_mask,
                       cross_mask=cross_mask, visualize=visualize)
 
