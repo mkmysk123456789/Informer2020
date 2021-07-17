@@ -276,6 +276,10 @@ class Exp_Informer(Exp_Basic):
         return self.model
 
     def test(self, setting):
+        folder_path = './results/' + setting + '/'
+        if not os.path.exists(folder_path):
+            os.makedirs(folder_path)
+
         test_data, test_loader = self._get_data(flag='test')
 
         self.model.eval()
@@ -293,6 +297,10 @@ class Exp_Informer(Exp_Basic):
             preds.append(pred.detach().cpu().numpy())
             trues.append(true.detach().cpu().numpy())
 
+            decorder_inputs = batch_x
+            np.save('./results/batch_x.npy', batch_x)
+            np.save('./results/batch_y.npy', batch_y)
+
         preds = np.array(preds)
         trues = np.array(trues)
         # print('test shape:', preds.shape, trues.shape)
@@ -301,10 +309,6 @@ class Exp_Informer(Exp_Basic):
         # print('test shape:', preds.shsape, trues.shape)
 
         # result save
-        folder_path = './results/' + setting + '/'
-        if not os.path.exists(folder_path):
-            os.makedirs(folder_path)
-
         mae, mse, rmse, mape, mspe = metric(preds, trues)
         print('mse:{}, mae:{}'.format(mse, mae))
 
