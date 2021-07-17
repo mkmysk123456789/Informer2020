@@ -33,17 +33,17 @@ class CAT_FullAttention(nn.Module):
         scores = torch.einsum("bler,bsep->blspr", queries, keys)
         # print(str(visualize))
 
+        if visualize:
+            attention_weight = scores.to('cpu').detach().numpy().copy()
+            np.save("./results/attention/attention_weight.npy",
+                    attention_weight)
+
         if self.mask_flag:
             if attn_mask is None:
                 attn_mask = CAT_TriangularCausalMask(
                     B, L, 7, 7, device=queries.device)
 
             scores.masked_fill_(attn_mask.mask, -np.inf)
-
-        if visualize:
-            attention_weight = scores.to('cpu').detach().numpy().copy()
-            np.save("./results/attention/attention_weight.npy",
-                    attention_weight)
 
         scores = scores.reshape(B, L, -1, 7)
         scores = torch.softmax(scores, dim=-2)
