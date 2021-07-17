@@ -112,6 +112,9 @@ parser.add_argument('--n_feature', type=int, default=7,
 parser.add_argument('--train', type=bool, default=True,
                     help='enable three-dimensional attention')
 
+parser.add_argument('--notify', type=bool, default=False,
+                    help='enable three-dimensional attention')
+
 
 args = parser.parse_args()
 
