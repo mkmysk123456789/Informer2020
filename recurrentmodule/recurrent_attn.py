@@ -64,11 +64,12 @@ class Recurrent_FullAttention(nn.Module):
 
             # valueに適用
             V = torch.einsum("bsep,bspr->ber", extracted_values, scores)
-            V = V.reshape(B, index_target_time+1, -1, self.n_feature)
+            V = V.reshape(B, 1, -1, self.n_feature)
             print("V.shape : "+str(V.shape))
             # valueを更新
-            values = torch.cat((
-                V[:, 0:index_target_time+1, :, :], values[:, index_target_time+1:, :, :]), 1)
+            # values = torch.cat((
+            #     V, values[:, index_target_time+1:, :, :]), 1)
+            values[:, index_target_time+1, :, :] = V
             print("values.shape : "+str(values.shape))
 
         if self.output_attention:
