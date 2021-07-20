@@ -51,13 +51,13 @@ class Recurrent_FullAttention(nn.Module):
             if self.mask_flag:
                 if attn_mask is None:
                     attn_mask = Recurrent_TriangularCausalMask(
-                        B, L, 7, 7, device=queries.device)
+                        B, index_target_time+1, self.n_feature, self.n_feature, device=queries.device)
 
                 scores.masked_fill_(attn_mask.mask, -np.inf)
 
             scores = scores.reshape(B, -1, self.n_feature)
             scores = torch.softmax(scores, dim=-2)
-            scores = scores.reshape(B, L, self.n_feature, -1)
+            scores = scores.reshape(B, index_target_time+1, self.n_feature, -1)
 
             print("extracted_values.shape : "+str(extracted_values.shape))
             print("scores.shape : "+str(scores.shape))
