@@ -77,7 +77,7 @@ class Recurrent_FullAttention(nn.Module):
             # print("values.shape : "+str(values.shape))
 
         if visualize:
-            attention_map = attention_map.to('cpu').detach().numpy().copy()
+            # attention_map = attention_map.to('cpu').detach().numpy().copy()
             np.save("./results/attention/recurrent_attention_map.npy",
                     attention_map)
         if self.output_attention:
