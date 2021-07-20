@@ -36,13 +36,13 @@ class Recurrent_FullAttention(nn.Module):
             # 必要なq,kを抽出
             extracted_query = queries[:, index_target_time, :, :]
             # extracted_query = extracted_query.view(B,-1,)
-            print("extracted_query.shape : "+str(extracted_query.shape))
+            # print("extracted_query.shape : "+str(extracted_query.shape))
 
             extracted_key = keys[:, 0:index_target_time+1, :, :]
-            print("extracted_key.shape : "+str(extracted_key.shape))
+            # print("extracted_key.shape : "+str(extracted_key.shape))
 
             extracted_values = values[:, 0:index_target_time+1, :, :]
-            print("extracted_values.shape : "+str(extracted_values.shape))
+            # print("extracted_values.shape : "+str(extracted_values.shape))
 
             # attention map を作成
             scores = torch.einsum("ber,bsep->bspr",
@@ -59,18 +59,18 @@ class Recurrent_FullAttention(nn.Module):
             scores = torch.softmax(scores, dim=-2)
             scores = scores.reshape(B, index_target_time+1, self.n_feature, -1)
 
-            print("extracted_values.shape : "+str(extracted_values.shape))
-            print("scores.shape : "+str(scores.shape))
+            # print("extracted_values.shape : "+str(extracted_values.shape))
+            # print("scores.shape : "+str(scores.shape))
 
             # valueに適用
             V = torch.einsum("bsep,bspr->ber", extracted_values, scores)
             V = V.reshape(B, 1,  -1, self.n_feature)
-            print("V.shape : "+str(V.shape))
+            # print("V.shape : "+str(V.shape))
             # valueを更新
             values = torch.cat((
                 values[:, :index_target_time, :, :], V, values[:, index_target_time+1:, :, :]), 1)
             # values[:, index_target_time+1, :, :] = V
-            print("values.shape : "+str(values.shape))
+            # print("values.shape : "+str(values.shape))
 
         if self.output_attention:
             return (values.contiguous(), None)
