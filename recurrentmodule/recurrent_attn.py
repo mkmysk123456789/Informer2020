@@ -67,7 +67,8 @@ class Recurrent_FullAttention(nn.Module):
             V = V.reshape(B, index_target_time+1, -1, self.n_feature)
             print("V.shape : "+str(V.shape))
             # valueを更新
-            values[:, 0:index_target_time+1, :, :] = V
+            values = torch.cat((
+                values[:, 0:index_target_time+1, :, :], V[:, L-index_target_time-1:, :, :]), 1)
 
         if self.output_attention:
             return (values.contiguous(), None)
