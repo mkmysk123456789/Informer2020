@@ -64,6 +64,7 @@ class Recurrent_FullAttention(nn.Module):
 
             # valueに適用
             V = torch.einsum("bsep,bspr->ber", extracted_values, scores)
+            V = V.reshape(B, index_target_time+1, -1, self.n_feature)
             print("V.shape : "+str(V.shape))
             # valueを更新
             values[:, 0:index_target_time+1, :, :] = V
