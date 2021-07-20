@@ -73,6 +73,9 @@ class Recurrent_FullAttention(nn.Module):
             # valueを更新
             values = torch.cat((
                 values[:, :index_target_time, :, :], V, values[:, index_target_time+1:, :, :]), 1)
+
+            keys = torch.cat((
+                values[:, :index_target_time, :, :], V, values[:, index_target_time+1:, :, :]), 1)
             # values[:, index_target_time+1, :, :] = V
             # print("values.shape : "+str(values.shape))
 
