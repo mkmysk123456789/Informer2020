@@ -38,10 +38,10 @@ class Recurrent_FullAttention(nn.Module):
             # extracted_query = extracted_query.view(B,-1,)
             print("extracted_query.shape : "+str(extracted_query.shape))
 
-            extracted_key = keys[:, 0:index_target_time, :, :]
+            extracted_key = keys[:, 0:index_target_time+1, :, :]
             print("extracted_key.shape : "+str(extracted_key.shape))
 
-            extracted_values = values[:, 0:index_target_time, :, :]
+            extracted_values = values[:, 0:index_target_time+1, :, :]
             print("extracted_values.shape : "+str(extracted_values.shape))
 
             # attention map を作成
