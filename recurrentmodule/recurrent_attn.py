@@ -55,6 +55,9 @@ class Recurrent_FullAttention(nn.Module):
             scores = torch.softmax(scores, dim=-2)
             scores = scores.reshape(B, L, self.n_feature, -1)
 
+            print("extracted_values.shape : "+str(extracted_values.shape))
+            print("scores.shape : "+str(scores.shape))
+
             # valueに適用
             V = torch.einsum("bsep,bspr->ber", extracted_values, scores)
             # valueを更新

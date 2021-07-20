@@ -56,8 +56,8 @@ class CAT(nn.Module):
         self.encoder = CAT_Encoder(
             [
                 CAT_EncoderLayer(
-                    CAT_AttentionLayer(Attn(False, factor, attention_dropout=dropout, output_attention=output_attention),
-                                       d_feature=d_feature, n_feature=n_feature, mix=False),
+                    AttnLayer(Attn(False, factor, attention_dropout=dropout, output_attention=output_attention),
+                              d_feature=d_feature, n_feature=n_feature, mix=False),
                     d_feature=d_feature,
                     n_feature=n_feature,
                     d_ff=d_ff,
@@ -76,12 +76,12 @@ class CAT(nn.Module):
         self.decoder = CAT_Decoder(
             [
                 CAT_DecoderLayer(
-                    CAT_AttentionLayer(Attn(True, factor, attention_dropout=dropout, output_attention=False),
-                                       d_feature=d_feature, n_feature=n_feature,  mix=mix),
-                    CAT_AttentionLayer(Attn(False, factor, attention_dropout=dropout, output_attention=False),
-                                       d_feature=d_feature, n_feature=n_feature, mix=False),
-                    CAT_AttentionLayer(Attn(True, factor, attention_dropout=dropout, output_attention=False),
-                                       d_feature=d_feature, n_feature=n_feature,  mix=mix),
+                    AttnLayer(Attn(True, factor, attention_dropout=dropout, output_attention=False),
+                              d_feature=d_feature, n_feature=n_feature,  mix=mix),
+                    AttnLayer(Attn(False, factor, attention_dropout=dropout, output_attention=False),
+                              d_feature=d_feature, n_feature=n_feature, mix=False),
+                    AttnLayer(Attn(True, factor, attention_dropout=dropout, output_attention=False),
+                              d_feature=d_feature, n_feature=n_feature,  mix=mix),
                     d_feature=d_feature,
                     n_feature=n_feature,
                     d_ff=d_ff,
