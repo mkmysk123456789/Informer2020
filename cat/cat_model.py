@@ -14,6 +14,8 @@ from cat.cat_decorder import CAT_Decoder, CAT_DecoderLayer
 from cat.cat_embed import CAT_DataEmbedding
 from cat.axial_attn import Axial_Attention
 
+from recurrentmodule.recurrent_attn import Recurrent_AttentionLayer, Recurrent_FullAttention
+
 
 class CAT(nn.Module):
     def __init__(self, enc_in, dec_in, c_out, seq_len, label_len, out_len,
@@ -37,10 +39,16 @@ class CAT(nn.Module):
         # Attention
         if attn == 'prob':
             Attn = ProbAttention
+            AttnLayer = AttentionLayer
         elif attn == 'CAT':
             Attn = CAT_FullAttention
+            AttnLayer = CAT_AttentionLayer
         elif attn == 'Axial':
             Attn = Axial_Attention
+            AttnLayer = CAT_AttentionLayer
+        elif attn == 'Recurrent':
+            Attn = Recurrent_FullAttention
+            AttnLayer = Recurrent_AttentionLayer
         else:
             Attn = None
 

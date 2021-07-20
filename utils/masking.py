@@ -28,6 +28,18 @@ class ProbMask():
         return self._mask
 
 
+class Recurrent_TriangularCausalMask():
+    def __init__(self, B, L, R, P, device="cpu"):
+        mask_shape = [B, L, R, P]
+        with torch.no_grad():
+            self._mask = torch.triu(torch.ones(
+                mask_shape, dtype=torch.bool), diagonal=1).to(device)
+
+    @property
+    def mask(self):
+        return self._mask
+
+
 class CAT_TriangularCausalMask():
     def __init__(self, B, L, R, P, device="cpu"):
         mask_shape = [B, L, L, R, P]

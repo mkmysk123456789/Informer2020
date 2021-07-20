@@ -298,8 +298,8 @@ class Exp_Informer(Exp_Basic):
             trues.append(true.detach().cpu().numpy())
 
             decorder_inputs = batch_x
-            np.save('./results/batch_x.npy', batch_x)
-            np.save('./results/batch_y.npy', batch_y)
+            np.save('./results/test_input/batch_x.npy', batch_x)
+            np.save('./results/test_input/batch_y.npy', batch_y)
 
         preds = np.array(preds)
         trues = np.array(trues)
