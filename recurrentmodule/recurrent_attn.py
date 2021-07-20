@@ -31,6 +31,8 @@ class Recurrent_FullAttention(nn.Module):
         values = values.view(B, L, -1, self.n_feature)
         keys = keys.view(B, L, -1, self.n_feature)
 
+        attention_map = []
+
         for index_target_time in range(L):
             # self.n_feature 個分のattention mapを作成する
             # 必要なq,kを抽出
@@ -59,6 +61,8 @@ class Recurrent_FullAttention(nn.Module):
             scores = torch.softmax(scores, dim=-2)
             scores = scores.reshape(B, index_target_time+1, self.n_feature, -1)
 
+            attention_map.append(scores)
+
             # print("extracted_values.shape : "+str(extracted_values.shape))
             # print("scores.shape : "+str(scores.shape))
 
@@ -72,6 +76,10 @@ class Recurrent_FullAttention(nn.Module):
             # values[:, index_target_time+1, :, :] = V
             # print("values.shape : "+str(values.shape))
 
+        if visualize:
+            attention_map = attention_map.to('cpu').detach().numpy().copy()
+            np.save("./results/attention/recurrent_attention_map.npy",
+                    attention_map)
         if self.output_attention:
             return (values.contiguous(), None)
         else:

@@ -185,3 +185,6 @@ Recurrent Experiment
 
 python3 -u main_informer.py --model CAT --data ETTh1 --attn Recurrent --freq h  --enc_in 1 --dec_in 1 --c_out 1  --pred_len 24 --d_feature 32 --n_feature 7 --label_len 24 --batch_size 32  --train_epochs 10 --seq_len 48 --e_layers 2 --d_layers 1 --itr 1 --notify True
 
+
+
+ python3 -u main_informer.py --model CAT --data ETTh1 --attn Recurrent --freq h  --enc_in 1 --dec_in 1 --c_out 1  --pred_len 24 --d_feature 32 --n_feature 7 --label_len 24 --batch_size 8  --train_epochs 20 --seq_len 48 --e_layers 2 --d_layers 1 --itr 1 --notify True
