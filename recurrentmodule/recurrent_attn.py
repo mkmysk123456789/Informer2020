@@ -36,10 +36,14 @@ class Recurrent_FullAttention(nn.Module):
             # 必要なq,kを抽出
             extracted_query = queries[:, index_target_time, :, :]
             # extracted_query = extracted_query.view(B,-1,)
+            print("extracted_query.shape : "+str(extracted_query.shape))
 
             extracted_key = keys[:, 0:index_target_time, :, :]
+            print("extracted_key.shape : "+str(extracted_key.shape))
 
             extracted_values = values[:, 0:index_target_time, :, :]
+            print("extracted_values.shape : "+str(extracted_values.shape))
+
             # attention map を作成
             scores = torch.einsum("ber,bsep->bspr",
                                   extracted_query, extracted_key)
