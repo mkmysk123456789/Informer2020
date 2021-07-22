@@ -14,7 +14,7 @@ from cat.cat_decorder import CAT_Decoder, CAT_DecoderLayer
 from cat.cat_embed import CAT_DataEmbedding
 from cat.axial_attn import Axial_Attention
 
-from recurrentmodule.recurrent_attn import Recurrent_AttentionLayer, Recurrent_FullAttention
+from recurrentmodule.recurrent_attn import Recurrent_AttentionLayer, Recurrent_FullAttention, Recurrent_AttentionLayer_embed_dimension
 
 
 class CAT(nn.Module):
@@ -49,6 +49,10 @@ class CAT(nn.Module):
         elif attn == 'Recurrent':
             Attn = Recurrent_FullAttention
             AttnLayer = Recurrent_AttentionLayer
+
+        elif attn == 'Recurrent_embed_linear':
+            Attn = Recurrent_FullAttention
+            AttnLayer = Recurrent_AttentionLayer_embed_dimension
         else:
             Attn = None
 

@@ -141,3 +141,58 @@ class Recurrent_AttentionLayer(nn.Module):
         out = out.view(B, L, -1)
 
         return self.out_projection(out), attn
+
+
+class Recurrent_AttentionLayer_embed_dimension(nn.Module):
+    def __init__(self, attention, d_feature=10, n_feature=7,
+                 d_keys=None, d_values=None, mix=False):
+        super(Recurrent_AttentionLayer, self).__init__()
+
+        self.seq_len = 48
+
+        # d_keys = d_keys or (d_model//n_heads)
+        # d_values = d_values or (d_model//n_heads)
+        self.d_model = d_feature * n_feature
+        self.linear_size = self.d_model*self.seq_len
+
+        self.inner_attention = attention
+        # query_projectionがAttentionを計算するための学習対象になる
+        self.query_projection = nn.Linear(self.d_model, self.d_model)
+        self.key_projection = nn.Linear(self.d_model, self.d_model)
+        self.value_projection = nn.Linear(self.d_model, self.d_model)
+        self.out_projection = nn.Linear(self.d_model, self.d_model)
+        # self.n_heads = n_heads  # 512
+        self.mix = mix
+
+    def forward(self, queries, keys, values, attn_mask, visualize=False):
+        # x , cross, cross なのでエンコーダの出力がkeyとqueriesになる
+
+        # print("queries.shape : "+str(queries.shape))
+        # print("keys.shape : "+str(keys.shape))
+
+        B, L, _ = queries.shape
+        _, S, _ = keys.shape
+        # H = self.n_heads
+
+        # query [32,96,70]
+
+        # queries = queries.reshape(B, -1)
+        # keys = keys.reshape(B, -1)
+        # values = values.reshape(B, -1)
+
+        queries = self.query_projection(queries)
+        keys = self.key_projection(keys)
+        values = self.value_projection(values)
+
+        out, attn = self.inner_attention(
+            queries,
+            keys,
+            values,
+            attn_mask, visualize=visualize
+        )
+        if self.mix:
+            out = out.transpose(2, 1).contiguous()
+
+        # out = out.view(B, L, -1)
+
+        return self.out_projection(out), attn
