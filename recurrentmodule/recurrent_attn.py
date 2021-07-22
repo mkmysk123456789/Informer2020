@@ -194,5 +194,7 @@ class Recurrent_AttentionLayer_embed_dimension(nn.Module):
             out = out.transpose(2, 1).contiguous()
 
         # out = out.view(B, L, -1)
+        print("out shape :")
+        print(out.shape)
 
         return self.out_projection(out), attn
