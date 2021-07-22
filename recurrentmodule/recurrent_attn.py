@@ -193,7 +193,7 @@ class Recurrent_AttentionLayer_embed_dimension(nn.Module):
         if self.mix:
             out = out.transpose(2, 1).contiguous()
 
-        # out = out.view(B, L, -1)
+        out = out.view(B, L, -1)
         print("out shape :")
         print(out.shape)
 
