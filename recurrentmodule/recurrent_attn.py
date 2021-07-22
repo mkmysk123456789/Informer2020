@@ -146,7 +146,7 @@ class Recurrent_AttentionLayer(nn.Module):
 class Recurrent_AttentionLayer_embed_dimension(nn.Module):
     def __init__(self, attention, d_feature=10, n_feature=7,
                  d_keys=None, d_values=None, mix=False):
-        super(Recurrent_AttentionLayer, self).__init__()
+        super(Recurrent_AttentionLayer_embed_dimension, self).__init__()
 
         self.seq_len = 48
 
