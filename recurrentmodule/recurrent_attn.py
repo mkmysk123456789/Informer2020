@@ -160,7 +160,7 @@ class Recurrent_AttentionLayer_embed_dimension(nn.Module):
         self.query_projection = nn.Linear(self.d_model, self.d_model)
         self.key_projection = nn.Linear(self.d_model, self.d_model)
         self.value_projection = nn.Linear(self.d_model, self.d_model)
-        self.out_projection = nn.Linear(self.seq_len, self.seq_len)
+        self.out_projection = nn.Linear(self.d_model, self.d_model)
         # self.n_heads = n_heads  # 512
         self.mix = mix
 
