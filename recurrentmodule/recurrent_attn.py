@@ -145,7 +145,7 @@ class Recurrent_AttentionLayer(nn.Module):
 
 class Recurrent_AttentionLayer_embed_dimension(nn.Module):
     def __init__(self, attention, d_feature=10, n_feature=7,
-                 d_keys=None, d_values=None, mix=False):
+                 d_keys=None, d_values=None, mix=False, seq_len=48):
         super(Recurrent_AttentionLayer_embed_dimension, self).__init__()
 
         self.seq_len = 48
@@ -160,7 +160,7 @@ class Recurrent_AttentionLayer_embed_dimension(nn.Module):
         self.query_projection = nn.Linear(self.d_model, self.d_model)
         self.key_projection = nn.Linear(self.d_model, self.d_model)
         self.value_projection = nn.Linear(self.d_model, self.d_model)
-        self.out_projection = nn.Linear(self.d_model, self.d_model)
+        self.out_projection = nn.Linear(self.seq_len, self.seq_len)
         # self.n_heads = n_heads  # 512
         self.mix = mix
 
