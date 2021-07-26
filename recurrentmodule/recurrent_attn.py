@@ -9,7 +9,7 @@ from utils.masking import Recurrent_TriangularCausalMask
 
 
 class Recurrent_FullAttention(nn.Module):
-    def __init__(self, mask_flag=False, factor=5, scale=None, attention_dropout=0.1, output_attention=False, n_feature=7):
+    def __init__(self, mask_flag=False, factor=5, scale=None, attention_dropout=0.1, output_attention=False, n_feature=8):
         super(Recurrent_FullAttention, self).__init__()
         self.scale = scale
         self.mask_flag = mask_flag
