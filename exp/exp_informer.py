@@ -99,6 +99,7 @@ class Exp_Informer(Exp_Basic):
             'ETTm1': Dataset_ETT_minute,
             'ETTm2': Dataset_ETT_minute,
             'WTH': Dataset_Custom,
+            'LCD': Dataset_Custom,
             'ECL': Dataset_Custom,
             'Solar': Dataset_Custom,
             'custom': Dataset_Custom,
