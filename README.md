@@ -199,4 +199,4 @@ python3 -u main_informer.py --model CAT --data ETTh1 --attn Recurrent_embed_line
 
 data LCD WTH Weather
 
-python3 -u main_informer.py --model CAT --root_path ./data/LCD/ --data LCD --attn Recurrent_embed_linear --freq h  --enc_in 1 --dec_in 1 --c_out 1  --pred_len 24 --d_feature 32 --n_feature 8 --label_len 24 --batch_size 32  --train_epochs 20 --seq_len 48 --e_layers 2 --d_layers 1 --itr 1 --notify True --target HourlyWetBulbTemperature
+python3 -u main_informer.py --model CAT --root_path ./data/LCD/ --target HourlyWetBulbTemperature --data LCD --attn Recurrent_embed_linear --freq h  --enc_in 1 --dec_in 1 --c_out 1  --pred_len 24 --d_feature 32 --n_feature 8 --label_len 24 --batch_size 32  --train_epochs 20 --seq_len 48 --e_layers 2 --d_layers 1 --itr 1 --notify True
