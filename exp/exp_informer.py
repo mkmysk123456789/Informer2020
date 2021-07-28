@@ -203,6 +203,7 @@ class Exp_Informer(Exp_Basic):
         for epoch in range(self.args.train_epochs):  # epoch 初期値は 6
             iter_count = 0
             train_loss = []
+            train_loss_avg_list = []
 
             self.model.train()  # 1. modelのtrainを呼び出す
             epoch_time = time.time()
@@ -252,12 +253,13 @@ class Exp_Informer(Exp_Basic):
 
             print("Epoch: {} cost time: {}".format(
                 epoch+1, time.time()-epoch_time))
-            train_loss = np.average(train_loss)
+            train_loss_avg = np.average(train_loss)
+            train_loss_avg_list.append(train_loss_avg)
             vali_loss = self.vali(vali_data, vali_loader, criterion)
             test_loss = self.vali(test_data, test_loader, criterion)
 
             print("Epoch: {0}, Steps: {1} | Train Loss: {2:.7f} Vali Loss: {3:.7f} Test Loss: {4:.7f}".format(
-                epoch + 1, train_steps, train_loss, vali_loss, test_loss))
+                epoch + 1, train_steps, train_loss_avg, vali_loss, test_loss))
             early_stopping(vali_loss, self.model, path)
             if early_stopping.early_stop:
                 print("Early stopping")
@@ -269,10 +271,17 @@ class Exp_Informer(Exp_Basic):
             if self.args.notify:
                 send_line_notify(message="Epoch: {} cost time: {}".format(
                     epoch+1, time.time()-epoch_time)+"Epoch: {0}, Steps: {1} | Train Loss: {2:.7f} Vali Loss: {3:.7f} Test Loss: {4:.7f}".format(
-                    epoch + 1, train_steps, train_loss, vali_loss, test_loss))
+                    epoch + 1, train_steps, train_loss_avg, vali_loss, test_loss))
 
         best_model_path = path+'/'+'checkpoint.pth'
         self.model.load_state_dict(torch.load(best_model_path))  # いつセーブした?
+
+        folder_path = './results/' + setting + '/'
+        if not os.path.exists(folder_path):
+            os.makedirs(folder_path)
+
+        # loss のsave
+        np.save(folder_path+'/'+'train_loss_avg_list.npy', train_loss_avg_list)
 
         return self.model
 
