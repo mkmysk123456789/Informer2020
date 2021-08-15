@@ -1,3 +1,7 @@
 data/WESAD/
 
 data/LCD/
+
+results/attention/attention_weight-0708-0242.npy
+
+results/attention/attention_weight_07071952.npy
